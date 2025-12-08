@@ -6,7 +6,7 @@ Uses Pydantic v2 for automatic field validation and type checking.
 """
 
 from pydantic import BaseModel, Field, field_validator
-from datetime import datetime
+from datetime import datetime, date
 from typing import Literal
 
 
@@ -133,6 +133,86 @@ class Habit(HabitBase):
 
         Returns:
             Habit: Validated Habit instance
+
+        Raises:
+            ValidationError: If database row has invalid data
+        """
+        return cls.model_validate(row)
+
+
+class CompletionBase(BaseModel):
+    """
+    Base completion model with common fields and validation.
+
+    This model represents a habit completion record with the date and count.
+    """
+
+    habit_id: int = Field(..., gt=0, description="ID of the associated habit")
+    date: date = Field(..., description="Date of the completion")
+    count: int = Field(default=1, ge=0, description="Number of completions (0 or more)")
+
+    @field_validator("date")
+    @classmethod
+    def validate_date(cls, v: date) -> date:
+        """
+        Validate that the date is not in the future.
+
+        Args:
+            v: The date to validate
+
+        Returns:
+            date: Validated date
+
+        Raises:
+            ValueError: If date is in the future
+        """
+        from datetime import date as date_module
+
+        today = date_module.today()
+        if v > today:
+            raise ValueError("Completion date cannot be in the future")
+        return v
+
+
+class CompletionCreate(CompletionBase):
+    """
+    Model for creating a new completion.
+
+    Inherits all fields from CompletionBase. Used to validate data
+    before inserting into database.
+    """
+
+    pass
+
+
+class Completion(CompletionBase):
+    """
+    Complete completion model with database fields.
+
+    Represents a completion as stored in the database.
+    Includes auto-generated fields (id, completed_at).
+    """
+
+    id: int
+    completed_at: datetime
+
+    class Config:
+        """Pydantic configuration"""
+
+        from_attributes = True  # Allows .model_validate() from dict/object
+
+    @classmethod
+    def from_db_row(cls, row: dict) -> "Completion":
+        """
+        Create a Completion instance from a database row.
+
+        Factory method to convert database query results into Completion objects.
+
+        Args:
+            row: Dictionary containing completion data from database
+
+        Returns:
+            Completion: Validated Completion instance
 
         Raises:
             ValidationError: If database row has invalid data

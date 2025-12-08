@@ -15,7 +15,8 @@ habitforge/
 │   ├── assets/                 # Icons, images
 │   ├── components/             # Reusable UI components
 │   │   ├── __init__.py
-│   │   └── color_picker.py     # HabitColorPicker component
+│   │   ├── color_picker.py     # HabitColorPicker component
+│   │   └── habit_card.py       # HabitCard widget for habit list
 │   ├── config/                 # Configuration
 │   │   ├── __init__.py
 │   │   └── constants.py        # App constants and color palette
@@ -23,17 +24,20 @@ habitforge/
 │   │   └── habitforge.db       # SQLite database
 │   ├── logic/                  # Business logic
 │   │   ├── __init__.py
-│   │   └── habit_manager.py    # Habit validation and business rules
+│   │   ├── habit_manager.py    # Habit validation and business rules
+│   │   ├── date_utils.py       # Date calculation utilities
+│   │   └── completion_manager.py # Completion tracking logic
 │   ├── models/                 # Data models
 │   │   ├── __init__.py
 │   │   ├── schema.sql          # Database schema reference
-│   │   ├── schemas.py          # Pydantic models
+│   │   ├── schemas.py          # Pydantic models (Habit, Completion)
 │   │   └── database.py         # Database CRUD operations
 │   ├── utils/                  # Utilities (only __init__.py)
 │   ├── views/                  # UI screens
 │   │   ├── __init__.py
-│   │   └── habit_form.py       # Habit create/edit form
-│   └── main.py                 # Entry point - KivyMD app
+│   │   ├── habit_form.py       # Habit create/edit form
+│   │   └── main_screen.py      # Main habit list screen
+│   └── main.py                 # Entry point - KivyMD app with ScreenManager
 ├── docs/                       # Documentation
 │   └── PRD_HabitTracker.md    # Product Requirements Document
 ├── scripts/                    # Build/utility scripts
@@ -47,19 +51,37 @@ habitforge/
 ```
 
 ### Current Implementation Status
+
 ✅ **PRD Section 2.1.1 - Habit Management: COMPLETED**
+✅ **PRD Section 2.1.2 - Completion Tracking: COMPLETED**
 
 **Implemented Files:**
+
+**Data Layer:**
 - ✅ [app/models/schema.sql](app/models/schema.sql) - Complete database schema with habits, completions, settings tables
-- ✅ [app/models/schemas.py](app/models/schemas.py) - Pydantic models (HabitBase, HabitCreate, HabitUpdate, Habit)
+- ✅ [app/models/schemas.py](app/models/schemas.py) - Pydantic models (Habit, Completion)
 - ✅ [app/models/database.py](app/models/database.py) - SQLite CRUD operations with context managers
-- ✅ [app/config/constants.py](app/config/constants.py) - Color palette (8 colors) and validation constants
-- ✅ [app/logic/habit_manager.py](app/logic/habit_manager.py) - Business logic with unique name checking
+
+**Business Logic:**
+- ✅ [app/logic/habit_manager.py](app/logic/habit_manager.py) - Habit validation and business rules
+- ✅ [app/logic/date_utils.py](app/logic/date_utils.py) - Date period calculations (daily/weekly/monthly)
+- ✅ [app/logic/completion_manager.py](app/logic/completion_manager.py) - Completion tracking and progress calculation
+
+**UI Components:**
 - ✅ [app/components/color_picker.py](app/components/color_picker.py) - HabitColorPicker widget (4×2 grid)
-- ✅ [app/views/habit_form.py](app/views/habit_form.py) - Complete habit form with validation
-- ✅ [app/main.py](app/main.py) - Updated to KivyMD with database initialization
+- ✅ [app/components/habit_card.py](app/components/habit_card.py) - HabitCard widget with progress display
+
+**Views/Screens:**
+- ✅ [app/views/habit_form.py](app/views/habit_form.py) - Habit create/edit form with navigation
+- ✅ [app/views/main_screen.py](app/views/main_screen.py) - Main screen with habit list grouped by type
+
+**Configuration:**
+- ✅ [app/config/constants.py](app/config/constants.py) - Color palette (8 colors) and validation constants
+- ✅ [app/main.py](app/main.py) - App entry point with ScreenManager navigation
 
 **Functionality Implemented:**
+
+**Habit Management (2.1.1):**
 - ✅ Create new habits with name, color, goal type, and goal count
 - ✅ Update existing habits (edit mode)
 - ✅ Database persistence with SQLite
@@ -73,11 +95,21 @@ habitforge/
 - ✅ Archive/unarchive habits (soft delete)
 - ✅ Hard delete habits
 
+**Completion Tracking (2.1.2):**
+- ✅ Increment completion count with + button
+- ✅ Progress calculation for daily/weekly/monthly goals
+- ✅ Visual progress display (X / Y format)
+- ✅ Goal met indicator (✓ checkmark)
+- ✅ Date period boundary calculations
+- ✅ Main screen with habit list grouped by type
+- ✅ HabitCard component with colored bar and progress
+- ✅ Screen navigation (Main ↔ Form)
+- ✅ Automatic list refresh after habit save
+- ✅ Completions table with UPSERT operations
+- ✅ Foreign key CASCADE delete
+
 **Testing Status:**
-- ✅ Successfully created test habit "David" with green color, weekly goal
-- ✅ Database operations confirmed working
-- ✅ Validation working correctly
-- ✅ UI form functional on desktop
+- ⏸️ Not yet tested (implementation complete, awaiting testing)
 
 ### Technology Stack
 - **Language**: Python 3.9+
@@ -115,11 +147,11 @@ CREATE TABLE IF NOT EXISTS habits (
     goal_count INTEGER NOT NULL CHECK(goal_count > 0 AND goal_count <= 100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     archived INTEGER DEFAULT 0,
-    UNIQUE(name COLLATE NOCASE)  -- Case-insensitive unique constraint
+    UNIQUE(name COLLATE NOCASE)
 );
 ```
 
-**Completions Table** (for future use):
+**Completions Table:**
 ```sql
 CREATE TABLE IF NOT EXISTS completions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -132,18 +164,30 @@ CREATE TABLE IF NOT EXISTS completions (
 );
 ```
 
+**Indexes:**
+- `idx_completions_habit_date` - Composite index on (habit_id, date)
+- `idx_habits_archived` - Index on archived column
+
 ### Pydantic Models
 Defined in [app/models/schemas.py](app/models/schemas.py):
 
+**Habit Models:**
 - **HabitBase**: Base model with validation
   - `name`: 1-50 chars, stripped whitespace
   - `color`: Hex pattern `#RRGGBB`
   - `goal_type`: Literal['daily', 'weekly', 'monthly']
   - `goal_count`: Integer 1-100
-
 - **HabitCreate**: Inherits HabitBase, all fields required
 - **HabitUpdate**: All fields optional for partial updates
 - **Habit**: Complete model with `id`, `created_at`, `archived` fields
+
+**Completion Models:**
+- **CompletionBase**: Base model with validation
+  - `habit_id`: Positive integer
+  - `date`: Date (not in future)
+  - `count`: Non-negative integer
+- **CompletionCreate**: Inherits CompletionBase
+- **Completion**: Complete model with `id`, `completed_at` fields
 
 ### Color Palette
 8 Material Design colors defined in [app/config/constants.py](app/config/constants.py):
@@ -157,22 +201,27 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 4. **Material Design 3**: KivyMD components for modern Android UI
 5. **Cross-Platform Paths**: Handles Android `user_data_dir` and desktop fallback
 6. **Component Naming**: `HabitColorPicker` to avoid Kivy built-in conflicts
+7. **UPSERT Pattern**: Efficient completion increment using SQLite ON CONFLICT
+8. **Period Calculations**: Separate date_utils module for reusable date logic
+9. **ScreenManager Navigation**: Clean separation between main list and form screens
 
 ## Current Task
-**No active task.** Section 2.1.1 implementation is complete.
+**No active task.** Sections 2.1.1 and 2.1.2 implementation complete.
 
 **Next Potential Tasks** (from PRD, not started):
-- Section 2.1.2: Habit Completion Tracking
-- Section 2.1.3: Habit List Display
-- Main screen navigation with ScreenManager
-- Streak calculation logic
-- Analytics and reports
+- Section 2.2.1: Streak Tracking
+- Section 2.2.2: Calendar Heatmap Visualization
+- Section 2.2.3: Week Navigation
+- Section 2.2.4: Collapsible Sections
+- Section 2.2.5: Progress Statistics
 
 ## Known Issues
 - KivyMD 1.2.0 shows deprecation warning (version 2.0.0 available but not yet installed)
-- No navigation system yet (form is the only screen)
 - No confirmation dialog for deletions
 - No unit tests yet
+- Implementation not yet tested (code complete, testing pending)
+- Empty state on main screen needs testing
+- Error handling with Snackbar/Toast not implemented (uses logging only)
 
 ## Notes
 - This is MVP Phase 1 work
@@ -180,6 +229,7 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 - Keep code simple and maintainable
 - Follow the project structure defined in README.md and PRD
 - Database created at runtime in `app/data/habitforge.db`
+- Foreign key constraints enabled via PRAGMA
 
 ---
 *Last Updated: December 8, 2024*

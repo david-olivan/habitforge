@@ -5,11 +5,13 @@ Main application entry point.
 """
 
 from kivymd.app import MDApp
+from kivymd.uix.screenmanager import MDScreenManager
 from kivy.core.window import Window
 from kivy.logger import Logger
 
 from models.database import init_database
 from views.habit_form import HabitFormScreen
+from views.main_screen import MainScreen
 
 
 class HabitForgeApp(MDApp):
@@ -22,7 +24,7 @@ class HabitForgeApp(MDApp):
         Build and return the root widget.
 
         Returns:
-            Widget: Root widget (HabitFormScreen for testing)
+            Widget: Root widget (ScreenManager with MainScreen and HabitFormScreen)
         """
         # Set window size for desktop testing
         Window.size = (400, 700)
@@ -39,8 +41,17 @@ class HabitForgeApp(MDApp):
         except Exception as e:
             Logger.error(f"HabitForge: Failed to initialize database: {e}")
 
-        # Load habit form screen
-        return HabitFormScreen()
+        # Create screen manager
+        screen_manager = MDScreenManager()
+
+        # Add screens
+        screen_manager.add_widget(MainScreen())
+        screen_manager.add_widget(HabitFormScreen())
+
+        # Set default screen to main_screen
+        screen_manager.current = "main_screen"
+
+        return screen_manager
 
     def on_start(self):
         """

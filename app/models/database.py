@@ -9,7 +9,8 @@ import sqlite3
 import os
 from typing import List, Dict, Optional
 from pathlib import Path
-from .schemas import Habit
+from datetime import date
+from .schemas import Habit, Completion
 from kivy.logger import Logger
 
 
@@ -92,6 +93,32 @@ def init_database() -> None:
                 ON habits(archived)
                 """
             )
+
+            # Create completions table
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS completions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    habit_id INTEGER NOT NULL,
+                    date DATE NOT NULL,
+                    count INTEGER NOT NULL DEFAULT 1,
+                    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE,
+                    UNIQUE(habit_id, date)
+                )
+                """
+            )
+
+            # Create index on (habit_id, date) for query performance
+            cursor.execute(
+                """
+                CREATE INDEX IF NOT EXISTS idx_completions_habit_date
+                ON completions(habit_id, date)
+                """
+            )
+
+            # Enable foreign key constraints (SQLite disables by default)
+            cursor.execute("PRAGMA foreign_keys = ON")
 
             conn.commit()
             Logger.info("Database: Successfully initialized tables")
@@ -329,3 +356,295 @@ def unarchive_habit(habit_id: int) -> bool:
         bool: True if restoration successful, False otherwise
     """
     return update_habit(habit_id, archived=False)
+
+
+# ============================================================================
+# Completion Operations
+# ============================================================================
+
+
+def increment_completion(
+    habit_id: int, completion_date: date, amount: int = 1
+) -> Optional[Completion]:
+    """
+    Increment the completion count for a habit on a specific date.
+
+    If a completion record exists for the date, increments the count.
+    If no record exists, creates a new one with the given count.
+
+    Uses UPSERT pattern (INSERT ... ON CONFLICT).
+
+    Args:
+        habit_id: The habit ID
+        completion_date: The date of the completion
+        amount: Amount to increment by (default 1)
+
+    Returns:
+        Completion | None: Updated/created Completion object, or None on error
+    """
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+
+            # Use UPSERT to insert or update
+            cursor.execute(
+                """
+                INSERT INTO completions (habit_id, date, count)
+                VALUES (?, ?, ?)
+                ON CONFLICT(habit_id, date)
+                DO UPDATE SET count = count + ?
+                """,
+                (habit_id, completion_date, amount, amount),
+            )
+            conn.commit()
+
+            # Fetch the updated/created record
+            cursor.execute(
+                """
+                SELECT id, habit_id, date, count, completed_at
+                FROM completions
+                WHERE habit_id = ? AND date = ?
+                """,
+                (habit_id, completion_date),
+            )
+
+            row = cursor.fetchone()
+            if row:
+                completion = Completion.from_db_row(dict(row))
+                Logger.info(
+                    f"Database: Incremented completion for habit {habit_id} on {completion_date} (count={completion.count})"
+                )
+                return completion
+            else:
+                Logger.error(
+                    f"Database: Failed to retrieve completion after increment"
+                )
+                return None
+    except sqlite3.Error as e:
+        Logger.error(
+            f"Database: Error incrementing completion for habit {habit_id}: {e}"
+        )
+        return None
+
+
+def decrement_completion(
+    habit_id: int, completion_date: date, amount: int = 1
+) -> Optional[Completion]:
+    """
+    Decrement the completion count for a habit on a specific date.
+
+    If count reaches 0, the record is kept (not deleted) to maintain history.
+    Count cannot go below 0.
+
+    Args:
+        habit_id: The habit ID
+        completion_date: The date of the completion
+        amount: Amount to decrement by (default 1)
+
+    Returns:
+        Completion | None: Updated Completion object, or None if record doesn't exist or error
+    """
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+
+            # Update count, ensuring it doesn't go below 0
+            cursor.execute(
+                """
+                UPDATE completions
+                SET count = MAX(0, count - ?)
+                WHERE habit_id = ? AND date = ?
+                """,
+                (amount, habit_id, completion_date),
+            )
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                Logger.warning(
+                    f"Database: No completion found for habit {habit_id} on {completion_date}"
+                )
+                return None
+
+            # Fetch the updated record
+            cursor.execute(
+                """
+                SELECT id, habit_id, date, count, completed_at
+                FROM completions
+                WHERE habit_id = ? AND date = ?
+                """,
+                (habit_id, completion_date),
+            )
+
+            row = cursor.fetchone()
+            if row:
+                completion = Completion.from_db_row(dict(row))
+                Logger.info(
+                    f"Database: Decremented completion for habit {habit_id} on {completion_date} (count={completion.count})"
+                )
+                return completion
+            else:
+                return None
+    except sqlite3.Error as e:
+        Logger.error(
+            f"Database: Error decrementing completion for habit {habit_id}: {e}"
+        )
+        return None
+
+
+def get_completion_for_date(
+    habit_id: int, completion_date: date
+) -> Optional[Completion]:
+    """
+    Retrieve a single completion record for a habit on a specific date.
+
+    Args:
+        habit_id: The habit ID
+        completion_date: The date to query
+
+    Returns:
+        Completion | None: Completion object if found, None otherwise
+    """
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT id, habit_id, date, count, completed_at
+                FROM completions
+                WHERE habit_id = ? AND date = ?
+                """,
+                (habit_id, completion_date),
+            )
+
+            row = cursor.fetchone()
+            if row:
+                completion = Completion.from_db_row(dict(row))
+                Logger.info(
+                    f"Database: Retrieved completion for habit {habit_id} on {completion_date}"
+                )
+                return completion
+            else:
+                return None
+    except sqlite3.Error as e:
+        Logger.error(
+            f"Database: Error retrieving completion for habit {habit_id}: {e}"
+        )
+        return None
+
+
+def get_completions_for_habit(
+    habit_id: int, start_date: Optional[date] = None, end_date: Optional[date] = None
+) -> List[Completion]:
+    """
+    Retrieve all completions for a habit, optionally filtered by date range.
+
+    Args:
+        habit_id: The habit ID
+        start_date: Optional start date (inclusive)
+        end_date: Optional end date (inclusive)
+
+    Returns:
+        List[Completion]: List of Completion objects, ordered by date descending
+    """
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+
+            if start_date and end_date:
+                cursor.execute(
+                    """
+                    SELECT id, habit_id, date, count, completed_at
+                    FROM completions
+                    WHERE habit_id = ? AND date BETWEEN ? AND ?
+                    ORDER BY date DESC
+                    """,
+                    (habit_id, start_date, end_date),
+                )
+            elif start_date:
+                cursor.execute(
+                    """
+                    SELECT id, habit_id, date, count, completed_at
+                    FROM completions
+                    WHERE habit_id = ? AND date >= ?
+                    ORDER BY date DESC
+                    """,
+                    (habit_id, start_date),
+                )
+            elif end_date:
+                cursor.execute(
+                    """
+                    SELECT id, habit_id, date, count, completed_at
+                    FROM completions
+                    WHERE habit_id = ? AND date <= ?
+                    ORDER BY date DESC
+                    """,
+                    (habit_id, end_date),
+                )
+            else:
+                cursor.execute(
+                    """
+                    SELECT id, habit_id, date, count, completed_at
+                    FROM completions
+                    WHERE habit_id = ?
+                    ORDER BY date DESC
+                    """,
+                    (habit_id,),
+                )
+
+            rows = cursor.fetchall()
+            completions = [Completion.from_db_row(dict(row)) for row in rows]
+            Logger.info(
+                f"Database: Retrieved {len(completions)} completion(s) for habit {habit_id}"
+            )
+            return completions
+    except sqlite3.Error as e:
+        Logger.error(
+            f"Database: Error retrieving completions for habit {habit_id}: {e}"
+        )
+        return []
+
+
+def get_completions_for_date_range(
+    start_date: date, end_date: date
+) -> Dict[int, List[Completion]]:
+    """
+    Retrieve all completions across all habits for a date range.
+
+    Useful for weekly/monthly views that show multiple habits.
+
+    Args:
+        start_date: Start date (inclusive)
+        end_date: End date (inclusive)
+
+    Returns:
+        Dict[int, List[Completion]]: Dictionary mapping habit_id to list of Completions
+    """
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT id, habit_id, date, count, completed_at
+                FROM completions
+                WHERE date BETWEEN ? AND ?
+                ORDER BY habit_id, date DESC
+                """,
+                (start_date, end_date),
+            )
+
+            rows = cursor.fetchall()
+            completions_by_habit: Dict[int, List[Completion]] = {}
+
+            for row in rows:
+                completion = Completion.from_db_row(dict(row))
+                if completion.habit_id not in completions_by_habit:
+                    completions_by_habit[completion.habit_id] = []
+                completions_by_habit[completion.habit_id].append(completion)
+
+            Logger.info(
+                f"Database: Retrieved completions for {len(completions_by_habit)} habit(s) in date range"
+            )
+            return completions_by_habit
+    except sqlite3.Error as e:
+        Logger.error(f"Database: Error retrieving completions for date range: {e}")
+        return {}

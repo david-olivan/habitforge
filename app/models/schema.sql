@@ -19,10 +19,11 @@ CREATE TABLE IF NOT EXISTS habits (
 );
 
 -- ============================================
--- COMPLETIONS TABLE (Future - Phase 2)
+-- COMPLETIONS TABLE
 -- ============================================
 -- Stores individual habit completion records
 -- Each row represents one or more completions on a specific date
+-- IMPLEMENTED in Phase 2 (Section 2.1.2)
 CREATE TABLE IF NOT EXISTS completions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     habit_id INTEGER NOT NULL,
@@ -45,13 +46,9 @@ CREATE TABLE IF NOT EXISTS settings (
 -- ============================================
 -- INDEXES FOR PERFORMANCE
 -- ============================================
--- Index on completions.habit_id for faster habit-specific queries
-CREATE INDEX IF NOT EXISTS idx_completions_habit_id
-ON completions(habit_id);
-
--- Index on completions.date for faster date-range queries
-CREATE INDEX IF NOT EXISTS idx_completions_date
-ON completions(date);
+-- Composite index on (habit_id, date) for faster habit-specific date queries
+CREATE INDEX IF NOT EXISTS idx_completions_habit_date
+ON completions(habit_id, date);
 
 -- Index on habits.archived for faster filtering of active habits
 CREATE INDEX IF NOT EXISTS idx_habits_archived

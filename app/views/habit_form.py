@@ -304,9 +304,8 @@ class HabitFormScreen(MDScreen):
     def _on_cancel(self, instance):
         """Handle cancel button press."""
         Logger.info("HabitForm: Cancelled")
-        # For now, just clear the form
-        # TODO: Navigate back to main screen when navigation is implemented
         self._reset_form()
+        self._navigate_to_main()
 
     def _reset_form(self):
         """Reset the form to defaults."""
@@ -325,11 +324,24 @@ class HabitFormScreen(MDScreen):
         self.error_label.theme_text_color = "Custom"
         self.error_label.text_color = (0, 1, 0, 1)  # Green
 
-        # Reset form after short delay
-        # TODO: Navigate to main screen when navigation is implemented
+        # Reset form and navigate back after short delay
         from kivy.clock import Clock
 
-        Clock.schedule_once(lambda dt: self._reset_form(), 2)
+        Clock.schedule_once(lambda dt: self._reset_and_navigate(), 1.5)
+
+    def _reset_and_navigate(self):
+        """Reset form and navigate back to main screen."""
+        self._reset_form()
+        self._navigate_to_main()
+
+    def _navigate_to_main(self):
+        """Navigate back to main screen."""
+        if self.manager:
+            self.manager.current = "main_screen"
+            # Refresh the main screen to show new/updated habit
+            main_screen = self.manager.get_screen("main_screen")
+            if main_screen and hasattr(main_screen, "refresh_on_return"):
+                main_screen.refresh_on_return()
 
     def _show_error(self, message: str):
         """Show error message."""
