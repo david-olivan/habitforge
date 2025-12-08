@@ -1,0 +1,32 @@
+<svg width="800" height="200" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon (scaled down version on left) -->
+  <g transform="translate(20, 20) scale(0.31)">
+    <!-- Flame -->
+    <path d="M256 80C256 80 220 120 220 160C220 186 235 208 256 208C277 208 292 186 292 160C292 120 256 80 256 80Z" fill="#FF6B35"/>
+    <path d="M256 100C256 100 235 130 235 155C235 170 243 183 256 183C269 183 277 170 277 155C277 130 256 100 256 100Z" fill="#FFB84D"/>
+    <path d="M256 120C256 120 245 140 245 155C245 165 249 173 256 173C263 173 267 165 267 155C267 140 256 120 256 120Z" fill="#FFF4A3"/>
+    
+    <!-- Anvil -->
+    <rect x="180" y="280" width="152" height="40" rx="8" fill="#3D3D3D"/>
+    <path d="M160 320 L160 360 L190 380 L322 380 L352 360 L352 320 Z" fill="#505050"/>
+    <path d="M160 280 L140 280 L140 320 L160 320 Z" fill="#5A5A5A"/>
+    <ellipse cx="256" cy="280" rx="76" ry="12" fill="#6B6B6B"/>
+    <ellipse cx="256" cy="278" rx="60" ry="8" fill="#7A7A7A" opacity="0.6"/>
+    <rect x="190" y="380" width="132" height="32" rx="4" fill="#2A2A2A"/>
+    
+    <!-- Sparks -->
+    <circle cx="280" cy="265" r="4" fill="#FFB84D" opacity="0.8"/>
+    <circle cx="290" cy="270" r="3" fill="#FF6B35" opacity="0.7"/>
+    <circle cx="275" cy="255" r="3" fill="#FFF4A3" opacity="0.9"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="120" font-family="Arial, sans-serif" font-size="72" font-weight="700" fill="#2C2C2C">
+    HabitForge
+  </text>
+  
+  <!-- Tagline (optional) -->
+  <text x="202" y="155" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#6B6B6B" letter-spacing="2">
+    FORGE YOUR HABITS
+  </text>
+</svg>

@@ -1,0 +1,73 @@
+# <type>(<scope>): <subject>
+# 
+# <body>
+# 
+# <footer>
+
+# ============================================================================
+# COMMIT MESSAGE TEMPLATE - Conventional Commits Format
+# ============================================================================
+#
+# TYPES (choose one):
+#   feat:     New feature for users
+#   fix:      Bug fix
+#   docs:     Documentation only changes
+#   style:    Formatting, missing semicolons, etc (no code logic change)
+#   refactor: Code change that neither fixes bug nor adds feature
+#   perf:     Performance improvement
+#   test:     Adding or updating tests
+#   chore:    Changes to build process, dependencies, etc
+#   ci:       Changes to CI/CD configuration
+#
+# SCOPES (choose one that applies):
+#   habits:    Habit management logic
+#   ui:        User interface components
+#   database:  Database operations
+#   analytics: Statistics and visualizations
+#   build:     Build system configuration
+#   ci:        CI/CD workflows
+#
+# SUBJECT LINE RULES:
+#   - Use imperative mood: "add" not "added" or "adds"
+#   - Keep under 50 characters
+#   - Start with lowercase after colon
+#   - No period at the end
+#
+# BODY (optional):
+#   - Explain WHAT and WHY, not HOW
+#   - Wrap at 72 characters
+#   - Leave blank line between subject and body
+#   - Use bullet points for multiple items
+#
+# FOOTER (optional):
+#   - Reference issues: "Closes #123" or "Fixes #456"
+#   - Breaking changes: "BREAKING CHANGE: description"
+#
+# ============================================================================
+# EXAMPLES:
+# ============================================================================
+#
+# feat(habits): add streak calculation logic
+#
+# Implemented algorithm to track consecutive goal completions.
+# Streak resets when user misses a goal period.
+#
+# Closes #15
+#
+# ----------------------------------------------------------------------------
+#
+# fix(database): prevent duplicate habit names
+#
+# Added unique constraint on habit name field.
+# Shows error message when user tries to create duplicate.
+#
+# Fixes #42
+#
+# ----------------------------------------------------------------------------
+#
+# docs(readme): add installation instructions
+#
+# Added step-by-step guide for Linux and WSL2 setup.
+# Includes troubleshooting section for common issues.
+#
+# ============================================================================
