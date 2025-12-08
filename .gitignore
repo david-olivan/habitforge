@@ -9,8 +9,10 @@ env/
 
 # Buildozer
 .buildozer/
-bin/
-*.apk
+bin/*.apk
+bin/*.aab
+build/
+dist/
 
 # IDE
 .vscode/
