@@ -1,0 +1,10 @@
+# Core UI Framework
+kivy[full]==2.3.1
+kivymd==1.2.0
+
+# Date/Time Utilities
+python-dateutil==2.9.0
+
+# Build Tools (for Android APK compilation)
+buildozer==1.5.0
+cython==0.29.33
