@@ -206,6 +206,7 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 9. **ScreenManager Navigation**: Clean separation between main list and form screens
 10. **Relative Imports**: All imports within `app/` use relative paths (e.g., `from models.database` NOT `from app.models.database`) since the app is run from the `app/` directory
 11. **Pydantic Field Naming**: Avoid naming model fields the same as their type (e.g., use `date: DateType` not `date: date`) to prevent schema generation issues
+12. **FloatLayout for FAB**: Use FloatLayout to allow FAB to truly float above scrollable content instead of taking up layout space in MDBoxLayout
 
 ## Current Task
 **No active task.** Sections 2.1.1 and 2.1.2 implementation complete.

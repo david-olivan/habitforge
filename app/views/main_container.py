@@ -102,6 +102,9 @@ class MainContainerScreen(MDScreen):
         self.habits_screen = MainScreen(embedded=True)
         habits_tab.add_widget(self.habits_screen)
 
+        # Manually trigger habit loading since on_enter won't fire for embedded screens
+        self.habits_screen.load_habits()
+
         # Analytics Tab (placeholder)
         analytics_tab = MDBottomNavigationItem(
             name="analytics", text="Analytics", icon="chart-bar"

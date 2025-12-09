@@ -11,6 +11,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDFloatingActionButton
+from kivy.uix.floatlayout import FloatLayout
 from kivy.metrics import dp
 from kivy.clock import Clock
 from datetime import date
@@ -18,7 +19,7 @@ from datetime import date
 from models.database import get_all_habits
 from logic.completion_manager import log_completion, get_habit_progress
 from components.habit_card import HabitCard
-from config.constants import GOAL_TYPE_LABELS
+from config.constants import GOAL_TYPE_LABELS, BRAND_PRIMARY_RGB
 from kivy.logger import Logger
 
 
@@ -51,7 +52,7 @@ class MainScreen(MDScreen):
 
     def build_ui(self):
         """Build the main screen UI."""
-        # Main container
+        # Main container - vertical layout for toolbar + content
         main_layout = MDBoxLayout(orientation="vertical")
 
         # Top app bar (only show if not embedded in bottom nav)
@@ -63,8 +64,11 @@ class MainScreen(MDScreen):
             )
             main_layout.add_widget(self.toolbar)
 
-        # Scrollable content area
-        scroll = MDScrollView()
+        # Float layout to hold scroll and FAB (FAB floats above scroll)
+        float_container = FloatLayout()
+
+        # Scrollable content area (fills the float layout)
+        scroll = MDScrollView(size_hint=(1, 1))
         self.content_layout = MDBoxLayout(
             orientation="vertical", spacing=dp(16), padding=dp(16), size_hint_y=None
         )
@@ -92,20 +96,25 @@ class MainScreen(MDScreen):
         self.content_layout.add_widget(self.sections_container)
 
         scroll.add_widget(self.content_layout)
+        float_container.add_widget(scroll)
 
-        # FAB button (Add Habit)
+        # FAB button (Add Habit) - floats above scroll
         # Adjust position to avoid bottom nav overlap when embedded
-        fab_y_pos = 0.15 if self.embedded else 0.1
+        fab_y_pos = 0.08 if self.embedded else 0.1  # More distance from bottom nav
         self.fab = MDFloatingActionButton(
             icon="plus",
-            md_bg_color=(0.3, 0.6, 0.9, 1),  # Blue
+            md_bg_color=BRAND_PRIMARY_RGB,  # Brand orange
             pos_hint={"center_x": 0.9, "center_y": fab_y_pos},
             on_release=self.navigate_to_add_habit,
         )
+        if hasattr(self.fab, 'elevation'):
+            self.fab.elevation = 6  # Proper elevation for floating effect
+
+        # Add FAB to float layout (it will float above scroll)
+        float_container.add_widget(self.fab)
 
         # Assemble layout
-        main_layout.add_widget(scroll)
-        main_layout.add_widget(self.fab)
+        main_layout.add_widget(float_container)
 
         self.add_widget(main_layout)
 
@@ -305,8 +314,22 @@ class MainScreen(MDScreen):
     def navigate_to_add_habit(self, button):
         """Navigate to the habit form screen to add a new habit."""
         Logger.info("MainScreen: Navigating to habit form")
-        if self.manager:
-            self.manager.current = "habit_form"
+        # When embedded in bottom nav, need to access parent's manager
+        screen_manager = self.manager
+        if not screen_manager and self.parent:
+            # Traverse up to find the screen manager
+            current = self.parent
+            while current:
+                if hasattr(current, 'manager') and current.manager:
+                    screen_manager = current.manager
+                    break
+                current = current.parent if hasattr(current, 'parent') else None
+
+        if screen_manager:
+            Logger.info("MainScreen: Found screen manager, switching to habit_form")
+            screen_manager.current = "habit_form"
+        else:
+            Logger.error("MainScreen: Could not find screen manager")
 
     def refresh_on_return(self):
         """

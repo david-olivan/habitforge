@@ -13,7 +13,7 @@ from kivy.properties import DictProperty, ObjectProperty, NumericProperty
 from kivy.utils import get_color_from_hex
 from kivy.graphics import Color, Rectangle
 from kivy.metrics import dp
-from config.constants import GOAL_TYPE_LABELS
+from config.constants import GOAL_TYPE_LABELS, BRAND_PRIMARY_RGB
 
 
 class HabitCard(MDCard):
@@ -73,7 +73,11 @@ class HabitCard(MDCard):
         self.color_bar.bind(pos=self.update_bar_rect, size=self.update_bar_rect)
 
         # Content area (habit info)
-        content_layout = MDBoxLayout(orientation="vertical", spacing=dp(4))
+        content_layout = MDBoxLayout(
+            orientation="vertical",
+            spacing=dp(0),
+            padding=[dp(0), dp(-8), dp(0), dp(0)]
+        )
 
         # Habit name (bold, larger text)
         self.name_label = MDLabel(
@@ -126,7 +130,7 @@ class HabitCard(MDCard):
         self.increment_btn = MDIconButton(
             icon="plus-circle",
             theme_text_color="Custom",
-            text_color=(0.3, 0.6, 0.9, 1),  # Blue
+            text_color=BRAND_PRIMARY_RGB,  # Brand orange
             on_release=self._on_increment_pressed,
         )
 
