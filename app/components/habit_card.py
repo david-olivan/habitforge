@@ -45,12 +45,18 @@ class HabitCard(MDCard):
         self.size_hint_y = None
         self.height = dp(80)
         self.md_bg_color = (1, 1, 1, 1)  # White background
-        self.elevation = 2
+        self.elevation = 1  # Softer shadow (Material Design)
         self.radius = [dp(8)]
         self.padding = dp(0)
 
         # Build the UI
         self.build_ui()
+
+        # Update display with initial data if provided
+        if self.habit:
+            self.update_habit_display()
+        if self.progress:
+            self.update_progress_display()
 
     def build_ui(self):
         """Build the card UI layout."""
