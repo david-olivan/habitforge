@@ -6,6 +6,47 @@ validation limits, and configuration values.
 """
 
 # ============================================
+# BRAND COLOR PALETTE
+# ============================================
+# Brand colors extracted from app logo (habitforge-icon-flat.svg, habitforge-icon.svg)
+# Used for app UI elements like top bar, navigation, buttons
+
+# Primary brand color (orange from logo)
+BRAND_PRIMARY = "#FF6B35"  # Vibrant orange
+BRAND_PRIMARY_RGB = (1.0, 0.42, 0.21, 1)  # Kivy RGB format
+
+# Flame gradient colors (from detailed icon)
+BRAND_FLAME_MID = "#FFB84D"  # Mid-flame yellow-orange
+BRAND_FLAME_BRIGHT = "#FFF4A3"  # Bright flame yellow
+
+# Grayscale colors from anvil (for secondary UI elements)
+BRAND_DARK_1 = "#2A2A2A"  # Darkest
+BRAND_DARK_2 = "#3D3D3D"
+BRAND_GRAY_1 = "#505050"
+BRAND_GRAY_2 = "#5A5A5A"
+BRAND_GRAY_3 = "#6B6B6B"
+BRAND_GRAY_4 = "#7A7A7A"  # Lightest gray
+
+# Helper function to convert hex to Kivy RGBA tuple
+def hex_to_rgba(hex_color: str, alpha: float = 1.0) -> tuple:
+    """
+    Convert hex color to Kivy RGBA tuple format.
+
+    Args:
+        hex_color: Hex color string (e.g., "#FF6B35")
+        alpha: Alpha/opacity value (0.0 to 1.0)
+
+    Returns:
+        Tuple of (r, g, b, a) with values from 0.0 to 1.0
+    """
+    hex_color = hex_color.lstrip("#")
+    r = int(hex_color[0:2], 16) / 255.0
+    g = int(hex_color[2:4], 16) / 255.0
+    b = int(hex_color[4:6], 16) / 255.0
+    return (r, g, b, alpha)
+
+
+# ============================================
 # COLOR PALETTE FOR HABITS
 # ============================================
 # Material Design inspired colors for habit visualization

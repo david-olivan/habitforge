@@ -15,6 +15,7 @@ from kivy.metrics import dp
 from views.main_screen import MainScreen
 from views.analytics_content import AnalyticsContent
 from views.account_content import AccountContent
+from config.constants import BRAND_PRIMARY_RGB
 
 
 class MainContainerScreen(MDScreen):
@@ -42,23 +43,46 @@ class MainContainerScreen(MDScreen):
             orientation="horizontal",
             size_hint_y=None,
             height=dp(56),
-            md_bg_color=(0.3, 0.6, 0.9, 1),  # Blue
-            padding=[dp(16), 0, 0, 0],
+            md_bg_color=BRAND_PRIMARY_RGB,  # Brand orange from logo
+            padding=[dp(16), 0, dp(16), 0],
         )
 
-        # Logo icon
+        # Logo icon with shadow effect
+        logo_container = MDBoxLayout(
+            size_hint=(None, None),
+            size=(dp(40), dp(40)),
+            pos_hint={"center_y": 0.5},
+        )
+
+        # Add shadow using canvas instructions
+        from kivy.graphics import Color, Ellipse
+        with logo_container.canvas.before:
+            Color(0, 0, 0, 0.3)  # Semi-transparent black shadow
+            self.logo_shadow = Ellipse(
+                pos=(logo_container.x + dp(1), logo_container.y - dp(1)),
+                size=(dp(36), dp(36))
+            )
+
         logo = Image(
             source="assets/icons/habitforge-icon-48.png",
             size_hint=(None, None),
             size=(dp(32), dp(32)),
-            pos_hint={"center_y": 0.5},
+            pos_hint={"center_x": 0.5, "center_y": 0.5},
         )
-        toolbar_layout.add_widget(logo)
+        logo_container.add_widget(logo)
+
+        # Bind to update shadow position when layout changes
+        def update_shadow(*args):
+            self.logo_shadow.pos = (logo_container.x + dp(1), logo_container.y - dp(1))
+            self.logo_shadow.size = (dp(36), dp(36))
+        logo_container.bind(pos=update_shadow, size=update_shadow)
+
+        toolbar_layout.add_widget(logo_container)
 
         # App title
         self.toolbar = MDTopAppBar(
             title="HabitForge",
-            md_bg_color=(0, 0, 0, 0),  # Transparent, using parent bg
+            md_bg_color=BRAND_PRIMARY_RGB,  # Same brand orange
             specific_text_color=(1, 1, 1, 1),  # White text
             elevation=0,
         )
