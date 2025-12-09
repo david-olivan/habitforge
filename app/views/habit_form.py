@@ -335,13 +335,15 @@ class HabitFormScreen(MDScreen):
         self._navigate_to_main()
 
     def _navigate_to_main(self):
-        """Navigate back to main screen."""
+        """Navigate back to main container screen."""
         if self.manager:
-            self.manager.current = "main_screen"
-            # Refresh the main screen to show new/updated habit
-            main_screen = self.manager.get_screen("main_screen")
-            if main_screen and hasattr(main_screen, "refresh_on_return"):
-                main_screen.refresh_on_return()
+            self.manager.current = "main_container"
+            # Refresh the habits list to show new/updated habit
+            main_container = self.manager.get_screen("main_container")
+            if main_container and hasattr(main_container, "habits_screen"):
+                habits_screen = main_container.habits_screen
+                if hasattr(habits_screen, "refresh_on_return"):
+                    habits_screen.refresh_on_return()
 
     def _show_error(self, message: str):
         """Show error message."""

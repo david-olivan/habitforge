@@ -11,7 +11,7 @@ from kivy.logger import Logger
 
 from models.database import init_database
 from views.habit_form import HabitFormScreen
-from views.main_screen import MainScreen
+from views.main_container import MainContainerScreen
 
 
 class HabitForgeApp(MDApp):
@@ -45,11 +45,11 @@ class HabitForgeApp(MDApp):
         screen_manager = MDScreenManager()
 
         # Add screens
-        screen_manager.add_widget(MainScreen())
+        screen_manager.add_widget(MainContainerScreen())
         screen_manager.add_widget(HabitFormScreen())
 
-        # Set default screen to main_screen
-        screen_manager.current = "main_screen"
+        # Set default screen to main_container
+        screen_manager.current = "main_container"
 
         return screen_manager
 
