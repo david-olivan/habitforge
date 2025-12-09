@@ -138,12 +138,12 @@ class HabitCard(MDCard):
 
     def on_habit(self, instance, value):
         """Update UI when habit data changes."""
-        if value:
+        if value and hasattr(self, 'name_label'):
             self.update_habit_display()
 
     def on_progress(self, instance, value):
         """Update UI when progress data changes."""
-        if value:
+        if value and hasattr(self, 'progress_label'):
             self.update_progress_display()
 
     def update_habit_display(self):

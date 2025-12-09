@@ -15,9 +15,9 @@ from kivy.metrics import dp
 from kivy.clock import Clock
 from datetime import date
 
-from app.models.database import get_all_habits
-from app.logic.completion_manager import log_completion, get_habit_progress
-from app.components.habit_card import HabitCard
+from models.database import get_all_habits
+from logic.completion_manager import log_completion, get_habit_progress
+from components.habit_card import HabitCard
 from config.constants import GOAL_TYPE_LABELS
 from kivy.logger import Logger
 

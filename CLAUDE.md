@@ -204,6 +204,8 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 7. **UPSERT Pattern**: Efficient completion increment using SQLite ON CONFLICT
 8. **Period Calculations**: Separate date_utils module for reusable date logic
 9. **ScreenManager Navigation**: Clean separation between main list and form screens
+10. **Relative Imports**: All imports within `app/` use relative paths (e.g., `from models.database` NOT `from app.models.database`) since the app is run from the `app/` directory
+11. **Pydantic Field Naming**: Avoid naming model fields the same as their type (e.g., use `date: DateType` not `date: date`) to prevent schema generation issues
 
 ## Current Task
 **No active task.** Sections 2.1.1 and 2.1.2 implementation complete.

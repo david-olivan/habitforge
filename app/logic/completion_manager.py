@@ -7,15 +7,15 @@ calculating progress, and validating completion operations.
 
 from datetime import date
 from typing import Tuple, Optional, Dict, List
-from app.models.database import (
+from models.database import (
     get_habit_by_id,
     increment_completion,
     decrement_completion,
     get_completion_for_date,
     get_completions_for_habit,
 )
-from app.models.schemas import Completion
-from app.logic.date_utils import get_today, get_period_boundaries
+from models.schemas import Completion
+from logic.date_utils import get_today, get_period_boundaries
 from kivy.logger import Logger
 
 

@@ -6,7 +6,8 @@ Uses Pydantic v2 for automatic field validation and type checking.
 """
 
 from pydantic import BaseModel, Field, field_validator
-from datetime import datetime, date
+from datetime import datetime
+from datetime import date as DateType
 from typing import Literal
 
 
@@ -122,7 +123,7 @@ class Habit(HabitBase):
         from_attributes = True  # Allows .model_validate() from dict/object
 
     @classmethod
-    def from_db_row(cls, row: dict) -> "Habit":
+    def from_db_row(cls, row: dict):
         """
         Create a Habit instance from a database row.
 
@@ -148,12 +149,12 @@ class CompletionBase(BaseModel):
     """
 
     habit_id: int = Field(..., gt=0, description="ID of the associated habit")
-    date: date = Field(..., description="Date of the completion")
+    date: DateType = Field(..., description="Date of the completion")
     count: int = Field(default=1, ge=0, description="Number of completions (0 or more)")
 
     @field_validator("date")
     @classmethod
-    def validate_date(cls, v: date) -> date:
+    def validate_date(cls, v: DateType) -> DateType:
         """
         Validate that the date is not in the future.
 
@@ -166,9 +167,7 @@ class CompletionBase(BaseModel):
         Raises:
             ValueError: If date is in the future
         """
-        from datetime import date as date_module
-
-        today = date_module.today()
+        today = DateType.today()
         if v > today:
             raise ValueError("Completion date cannot be in the future")
         return v
@@ -202,7 +201,7 @@ class Completion(CompletionBase):
         from_attributes = True  # Allows .model_validate() from dict/object
 
     @classmethod
-    def from_db_row(cls, row: dict) -> "Completion":
+    def from_db_row(cls, row: dict):
         """
         Create a Completion instance from a database row.
 
