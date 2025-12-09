@@ -33,9 +33,10 @@ class MainScreen(MDScreen):
     - FAB button to add new habits
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, embedded=False, **kwargs):
         super().__init__(**kwargs)
         self.name = "main_screen"
+        self.embedded = embedded  # Whether screen is embedded in bottom nav
 
         # Data storage
         self.habits = []
@@ -53,12 +54,14 @@ class MainScreen(MDScreen):
         # Main container
         main_layout = MDBoxLayout(orientation="vertical")
 
-        # Top app bar
-        self.toolbar = MDTopAppBar(
-            title="HabitForge",
-            md_bg_color=(0.3, 0.6, 0.9, 1),  # Blue
-            specific_text_color=(1, 1, 1, 1),  # White text
-        )
+        # Top app bar (only show if not embedded in bottom nav)
+        if not self.embedded:
+            self.toolbar = MDTopAppBar(
+                title="HabitForge",
+                md_bg_color=(0.3, 0.6, 0.9, 1),  # Blue
+                specific_text_color=(1, 1, 1, 1),  # White text
+            )
+            main_layout.add_widget(self.toolbar)
 
         # Scrollable content area
         scroll = MDScrollView()
@@ -91,15 +94,16 @@ class MainScreen(MDScreen):
         scroll.add_widget(self.content_layout)
 
         # FAB button (Add Habit)
+        # Adjust position to avoid bottom nav overlap when embedded
+        fab_y_pos = 0.15 if self.embedded else 0.1
         self.fab = MDFloatingActionButton(
             icon="plus",
             md_bg_color=(0.3, 0.6, 0.9, 1),  # Blue
-            pos_hint={"center_x": 0.9, "center_y": 0.1},
+            pos_hint={"center_x": 0.9, "center_y": fab_y_pos},
             on_release=self.navigate_to_add_habit,
         )
 
         # Assemble layout
-        main_layout.add_widget(self.toolbar)
         main_layout.add_widget(scroll)
         main_layout.add_widget(self.fab)
 
@@ -138,6 +142,11 @@ class MainScreen(MDScreen):
                 self.weekly_habits.append(habit)
             elif habit.goal_type == "monthly":
                 self.monthly_habits.append(habit)
+
+        # Sort habits by creation date (newest first)
+        self.daily_habits.sort(key=lambda h: h.created_at, reverse=True)
+        self.weekly_habits.sort(key=lambda h: h.created_at, reverse=True)
+        self.monthly_habits.sort(key=lambda h: h.created_at, reverse=True)
 
         Logger.info(
             f"MainScreen: Loaded {len(self.habits)} habits "
@@ -216,9 +225,10 @@ class MainScreen(MDScreen):
             }
             progress_dict = self.progress_data.get(habit.id, {})
 
-            card = HabitCard(
-                habit=habit_dict, progress=progress_dict, on_increment=self.on_increment
-            )
+            Logger.debug(f"MainScreen: Creating card with on_increment callback: {self.on_increment}")
+            card = HabitCard(habit=habit_dict, progress=progress_dict)
+            card.on_increment = self.on_increment  # Set after creation
+            Logger.debug(f"MainScreen: Card created, card.on_increment={card.on_increment}")
             self.habit_cards[habit.id] = card
             section.add_widget(card)
 

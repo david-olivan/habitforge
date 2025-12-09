@@ -62,7 +62,7 @@ class HabitCard(MDCard):
         """Build the card UI layout."""
         # Main container
         main_layout = MDBoxLayout(
-            orientation="horizontal", spacing=dp(12), padding=[dp(4), dp(8), dp(8), dp(8)]
+            orientation="horizontal", spacing=dp(12), padding=[dp(12), dp(12), dp(12), dp(12)]
         )
 
         # Colored bar on the left
@@ -189,16 +189,23 @@ class HabitCard(MDCard):
 
         # Update goal met indicator
         if goal_met:
-            self.goal_met_label.text = "✓ Goal met!"
+            self.goal_met_label.text = "Goal met!"
         else:
             self.goal_met_label.text = ""
 
     def _on_increment_pressed(self, button):
         """Handle increment button press."""
+        from kivy.logger import Logger
+        Logger.info(f"HabitCard: Increment button pressed for habit {self.habit}")
         if self.on_increment and self.habit:
             habit_id = self.habit.get("id")
             if habit_id:
+                Logger.info(f"HabitCard: Calling on_increment callback with habit_id={habit_id}")
                 self.on_increment(habit_id)
+            else:
+                Logger.warning("HabitCard: No habit_id found in habit data")
+        else:
+            Logger.warning(f"HabitCard: on_increment={self.on_increment}, habit={self.habit}")
 
     def update_data(self, habit_dict, progress_dict):
         """
