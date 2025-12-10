@@ -42,10 +42,10 @@ requirements = python3,kivy==2.3.1,kivymd==1.2.0,python-dateutil==2.9.0
 #garden_requirements =
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/assets/presplash.png
+presplash.filename = %(source.dir)s/assets/icons/presplash.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/assets/icons/icon.png
+icon.filename = %(source.dir)s/assets/icons/icon.png
 
 # (str) Supported orientation (landscape, sensorLandscape, portrait or all)
 orientation = portrait

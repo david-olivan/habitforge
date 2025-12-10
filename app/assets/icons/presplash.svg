@@ -1,0 +1,41 @@
+<svg width="720" height="1280" viewBox="0 0 720 1280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="720" height="1280" fill="#1E1E1E"/>
+
+  <!-- App Icon (centered, scaled to 256x256) -->
+  <g transform="translate(232, 400)">
+    <!-- Flame/Fire element -->
+    <path d="M128 40C128 40 110 60 110 80C110 93 117.5 104 128 104C138.5 104 146 93 146 80C146 60 128 40 128 40Z" fill="#FF6B35"/>
+    <path d="M128 50C128 50 117.5 65 117.5 77.5C117.5 85 121.5 91.5 128 91.5C134.5 91.5 138.5 85 138.5 77.5C138.5 65 128 50 128 50Z" fill="#FFB84D"/>
+    <path d="M128 60C128 60 122.5 70 122.5 77.5C122.5 82.5 124.5 86.5 128 86.5C131.5 86.5 133.5 82.5 133.5 77.5C133.5 70 128 60 128 60Z" fill="#FFF4A3"/>
+
+    <!-- Anvil base -->
+    <rect x="90" y="140" width="76" height="20" rx="4" fill="#3D3D3D"/>
+
+    <!-- Anvil body -->
+    <path d="M80 160 L80 180 L95 190 L161 190 L176 180 L176 160 Z" fill="#505050"/>
+
+    <!-- Anvil horn -->
+    <path d="M80 140 L70 140 L70 160 L80 160 Z" fill="#5A5A5A"/>
+
+    <!-- Anvil face -->
+    <ellipse cx="128" cy="140" rx="38" ry="6" fill="#6B6B6B"/>
+
+    <!-- Highlight on anvil -->
+    <ellipse cx="128" cy="139" rx="30" ry="4" fill="#7A7A7A" opacity="0.6"/>
+
+    <!-- Anvil base/foot -->
+    <rect x="95" y="190" width="66" height="16" rx="2" fill="#2A2A2A"/>
+
+    <!-- Hammer striking effect -->
+    <circle cx="140" cy="132.5" r="2" fill="#FFB84D" opacity="0.8"/>
+    <circle cx="145" cy="135" r="1.5" fill="#FF6B35" opacity="0.7"/>
+    <circle cx="137.5" cy="127.5" r="1.5" fill="#FFF4A3" opacity="0.9"/>
+  </g>
+
+  <!-- App Name -->
+  <text x="360" y="720" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#FFFFFF" text-anchor="middle">HabitForge</text>
+
+  <!-- Tagline (optional) -->
+  <text x="360" y="760" font-family="Arial, sans-serif" font-size="20" fill="#AAAAAA" text-anchor="middle">Build Better Habits</text>
+</svg>

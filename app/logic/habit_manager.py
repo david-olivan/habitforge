@@ -2,14 +2,13 @@
 Habit Business Logic for HabitForge
 
 This module contains business rules and validation logic for habits.
-Most field validation is handled by Pydantic models, but this module
+Field validation is handled by the schemas module, and this module
 adds database-level validation (e.g., unique name checks).
 """
 
 from typing import Tuple, Dict
 from models.database import get_all_habits
-from models.schemas import HabitCreate, HabitUpdate
-from pydantic import ValidationError
+from models.schemas import HabitCreate, HabitUpdate, ValidationError
 from kivy.logger import Logger
 
 
@@ -70,7 +69,7 @@ def validate_habit_for_save(
     """
     errors = {}
 
-    # Step 1: Validate with Pydantic models
+    # Step 1: Validate with schemas
     try:
         if habit_id is None:
             # Creating new habit - validate all required fields
@@ -79,31 +78,29 @@ def validate_habit_for_save(
             # Updating existing habit - validate provided fields
             HabitUpdate(**habit_data)
 
-        Logger.info(f"HabitManager: Pydantic validation passed for habit data")
+        Logger.info(f"HabitManager: Schema validation passed for habit data")
     except ValidationError as e:
-        # Convert Pydantic validation errors to user-friendly messages
-        for error in e.errors():
-            field = str(error["loc"][0])  # Field name
-            msg = error["msg"]  # Error message
+        # ValidationError message format is simple: "error message"
+        error_msg = str(e)
 
-            # Simplify error messages for better UX
-            if "String should have at least" in msg:
-                errors[field] = f"Must be at least {error['ctx']['min_length']} character"
-            elif "String should have at most" in msg:
-                errors[field] = f"Must be at most {error['ctx']['max_length']} characters"
-            elif "Input should be greater than or equal to" in msg:
-                errors[field] = f"Must be at least {error['ctx']['ge']}"
-            elif "Input should be less than or equal to" in msg:
-                errors[field] = f"Must be at most {error['ctx']['le']}"
-            elif "String should match pattern" in msg:
-                errors[field] = "Must be a valid hex color code (#RRGGBB)"
-            elif "Input should be" in msg and "Literal" in str(error.get("ctx")):
-                errors[field] = "Must be 'daily', 'weekly', or 'monthly'"
+        # Try to extract field name from common error patterns
+        if "name" in error_msg.lower():
+            errors["name"] = error_msg
+        elif "color" in error_msg.lower():
+            errors["color"] = error_msg
+        elif "goal_type" in error_msg.lower():
+            errors["goal_type"] = error_msg
+        elif "goal_count" in error_msg.lower():
+            errors["goal_count"] = error_msg
+        else:
+            # Generic error - assign to first field that had data
+            if "name" in habit_data:
+                errors["name"] = error_msg
             else:
-                errors[field] = msg
+                errors["general"] = error_msg
 
         Logger.warning(
-            f"HabitManager: Pydantic validation failed with {len(errors)} error(s)"
+            f"HabitManager: Schema validation failed with {len(errors)} error(s)"
         )
 
     # Step 2: Check unique name constraint (database-level validation)
