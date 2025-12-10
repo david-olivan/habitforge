@@ -1,11 +1,11 @@
 # HabitForge - Personal Android App
 
-[![Android Build Compliance](https://github.com/davs/habitforge/actions/workflows/android-compliance.yml/badge.svg)](https://github.com/davs/habitforge/actions/workflows/android-compliance.yml)
+[![Android Build Compliance](https://github.com/david-olivan/habitforge/actions/workflows/android-compliance.yml/badge.svg)](https://github.com/david-olivan/habitforge/actions/workflows/android-compliance.yml)
 
 A privacy-focused, offline-first habit tracking application for Android, built with Python and Kivy.
 
 <p align="center">
-  <img src="assets/icons/habitforge-logo.svg" alt="HabitForge Logo" width="400">
+  <img src="app/assets/icons/habitforge-logo.svg" alt="HabitForge Logo" width="400">
 </p>
 
 <p align="center">
@@ -90,11 +90,13 @@ The app design is inspired by existing habit trackers, with reference screenshot
 
 ### Tech Stack
 
-- **Language:** Python 3.9+
-- **UI Framework:** Kivy 2.2.1+, KivyMD 1.1.1+
+- **Language:** Python 3.11 (NOT 3.12 - p4a compatibility)
+- **UI Framework:** Kivy 2.3.1, KivyMD 1.2.0 (Material Design 3)
+- **Validation:** Native Python validation (Pydantic removed - build compatibility)
 - **Database:** SQLite3
 - **Build Tool:** Buildozer 1.5.0+
-- **Target Platform:** Android 7.0+ (API Level 24)
+- **Target Platform:** Android 7.0+ (API Level 24), Target API 35 (2025 compliance)
+- **Android NDK:** 26b (16KB page size support)
 
 ---
 
