@@ -26,8 +26,10 @@ class HabitForgeApp(MDApp):
         Returns:
             Widget: Root widget (ScreenManager with MainScreen and HabitFormScreen)
         """
-        # Set window size for desktop testing
-        Window.size = (400, 700)
+        # Set window size for desktop testing only
+        from kivy.utils import platform
+        if platform not in ('android', 'ios'):
+            Window.size = (400, 700)
 
         # Set app theme
         self.theme_cls.primary_palette = "Blue"

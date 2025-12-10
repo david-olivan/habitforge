@@ -6,13 +6,13 @@ Field validation is handled by the schemas module, and this module
 adds database-level validation (e.g., unique name checks).
 """
 
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Optional
 from models.database import get_all_habits
 from models.schemas import HabitCreate, HabitUpdate, ValidationError
 from kivy.logger import Logger
 
 
-def check_unique_name(name: str, exclude_id: int | None = None) -> bool:
+def check_unique_name(name: str, exclude_id: Optional[int] = None) -> bool:
     """
     Check if a habit name is unique (case-insensitive).
 
@@ -51,7 +51,7 @@ def check_unique_name(name: str, exclude_id: int | None = None) -> bool:
 
 
 def validate_habit_for_save(
-    habit_data: dict, habit_id: int | None = None
+    habit_data: dict, habit_id: Optional[int] = None
 ) -> Tuple[bool, Dict[str, str]]:
     """
     Validate habit data before saving to database.

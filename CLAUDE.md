@@ -3,7 +3,7 @@
 ## Project Context
 HabitForge is a privacy-focused, offline-first habit tracking application for Android built with Python and Kivy.
 
-## Current Project State (December 8, 2024)
+## Current Project State (December 10, 2024)
 
 ### Directory Structure
 ```
@@ -116,13 +116,91 @@ habitforge/
 - ⏸️ Not yet tested (implementation complete, awaiting testing)
 
 ### Technology Stack
-- **Language**: Python 3.9+
+- **Language**: Python 3.11 (NOT 3.12 - p4a compatibility)
 - **UI Framework**: Kivy 2.3.1, KivyMD 1.2.0 (Material Design 3)
-- **Validation**: Pydantic 2.5.3
+- **Validation**: Native Python validation (Pydantic removed - build compatibility)
 - **Database**: SQLite3 with context managers
 - **Build Tool**: Buildozer 1.5.0+
-- **Target Platform**: Android 7.0+ (API Level 24)
+- **Target Platform**: Android 7.0+ (API Level 24), Target API 35 (2025 compliance)
+- **Android NDK**: 26b (16KB page size support)
 - **Date/Time**: python-dateutil 2.9.0
+
+## Android Build Learnings (December 10, 2024)
+
+### Critical Build Fixes - v0.1.1
+
+**Problem**: APK crashed immediately after splash screen with no error message.
+
+**Root Cause Analysis**:
+1. **Missing KivyMD Dependencies**: KivyMD 1.2.0 requires `filetype` and `pillow` modules that weren't in requirements
+2. **Python 3.10+ Type Hints**: Used `int | None` syntax incompatible with Python 3.11 on Android
+3. **Window.size on Android**: Setting Window.size causes issues on mobile platforms
+
+**Solutions Applied**:
+1. **Added Missing Dependencies** to `requirements-app.txt` and `buildozer.spec`:
+   - `filetype==1.2.0` - **Critical**: KivyMD import dependency
+   - `pillow==10.4.0` - Image processing for KivyMD
+   - `certifi`, `charset-normalizer`, `idna` - SSL/HTTP support
+   - `requests`, `urllib3`, `six` - Network and compatibility libraries
+
+2. **Fixed Type Hints** in [app/logic/habit_manager.py](app/logic/habit_manager.py):
+   ```python
+   # OLD (Python 3.10+ only):
+   def check_unique_name(name: str, exclude_id: int | None = None) -> bool:
+
+   # NEW (Python 3.11 compatible):
+   from typing import Optional
+   def check_unique_name(name: str, exclude_id: Optional[int] = None) -> bool:
+   ```
+
+3. **Platform-Specific Window Config** in [app/main.py](app/main.py):
+   ```python
+   from kivy.utils import platform
+   if platform not in ('android', 'ios'):
+       Window.size = (400, 700)  # Desktop only
+   ```
+
+### 2025 Google Play Compliance Updates
+
+**Buildozer.spec Configuration**:
+- `android.api = 35` - Target API 35 (Android 15) - Required by August 31, 2025
+- `android.sdk = 35` - SDK version 35
+- `android.ndk = 26b` - NDK r26+ for 16KB page size support (deadline: Nov 1, 2025)
+- `android.minapi = 24` - Minimum Android 7.0
+- `android.arch = arm64-v8a` - 64-bit architecture
+
+### Dependency Management Best Practice
+
+**Use `pip freeze` for exact versions**:
+```powershell
+python -m pip freeze > pip-freeze.txt
+```
+Then manually filter for app dependencies (exclude Windows-specific packages like `kivy-deps.*`, `pywin32`, build tools like `buildozer`, `virtualenv`).
+
+**Files to keep in sync**:
+- `requirements.txt` - Desktop development dependencies
+- `requirements-app.txt` - Android APK runtime dependencies (no build tools, no Windows packages)
+- `buildozer.spec` requirements line - Must match requirements-app.txt
+
+### Debugging APK Crashes
+
+**Get Android logs via ADB**:
+```bash
+adb logcat | grep -i python  # Linux/Mac
+adb logcat > logs.txt  # Windows (then search for 'python' or 'ModuleNotFoundError')
+```
+
+**Common crash patterns**:
+- `ModuleNotFoundError` - Missing dependency in requirements
+- Silent crash after KivyMD init - Usually missing KivyMD dependencies
+- Type errors - Check Python 3.10+ syntax compatibility
+
+### Python Version Constraints
+
+**MUST use Python 3.11** (not 3.12):
+- python-for-android doesn't fully support Python 3.12 yet
+- Use `typing.Optional[T]` instead of `T | None` for type hints
+- Test locally with Python 3.11 before building APK
 
 ## Critical Instructions
 
@@ -239,4 +317,4 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 - Foreign key constraints enabled via PRAGMA
 
 ---
-*Last Updated: December 8, 2024*
+*Last Updated: December 10, 2024*

@@ -1,4 +1,19 @@
 # App dependencies only (for Buildozer)
+# Core UI Framework
 kivy==2.3.1
 kivymd==1.2.0
+
+# Date/Time Utilities
 python-dateutil==2.9.0
+
+# KivyMD 1.2.0 dependencies (missing from previous builds)
+filetype==1.2.0
+pillow==10.4.0
+
+# Additional runtime dependencies
+certifi==2025.11.12
+charset-normalizer==3.4.4
+idna==3.11
+requests==2.32.5
+six==1.17.0
+urllib3==2.6.1

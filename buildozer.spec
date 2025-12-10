@@ -28,11 +28,11 @@ source.include_exts = py,png,jpg,kv,atlas,svg
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1.0
+version = 0.1.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy==2.3.1,kivymd==1.2.0,python-dateutil==2.9.0
+requirements = python3,kivy==2.3.1,kivymd==1.2.0,python-dateutil==2.9.0,filetype==1.2.0,pillow==10.4.0,certifi==2025.11.12,charset-normalizer==3.4.4,idna==3.11,requests==2.32.5,six==1.17.0,urllib3==2.6.1
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -61,16 +61,18 @@ fullscreen = 0
 android.permissions =
 
 # (int) Target Android API, should be as high as possible.
-android.api = 33
+# Google Play requires API 35 (Android 15) as of August 31, 2025
+android.api = 35
 
 # (int) Minimum API your APK will support.
 android.minapi = 24
 
 # (int) Android SDK version to use
-#android.sdk = 20
+android.sdk = 35
 
 # (str) Android NDK version to use
-android.ndk = 25b
+# NDK r26+ recommended for 16KB page size support
+android.ndk = 26b
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
