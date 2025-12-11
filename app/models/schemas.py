@@ -400,10 +400,15 @@ class Completion(CompletionBase):
         Raises:
             ValidationError: If database row has invalid data
         """
+        # Convert date string from database to date object
+        date_value = row["date"]
+        if isinstance(date_value, str):
+            date_value = datetime.strptime(date_value, "%Y-%m-%d").date()
+
         return cls(
             id=row["id"],
             habit_id=row["habit_id"],
-            date=row["date"],
+            date=date_value,
             count=row["count"],
             completed_at=row["completed_at"],
         )
