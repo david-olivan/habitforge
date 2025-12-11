@@ -127,7 +127,7 @@ habitforge/
 
 ## Android Build Learnings (December 10, 2024)
 
-### Critical Build Fixes - v0.1.1
+### Critical Build Fixes - v0.1.2
 
 **Problem**: APK crashed immediately after splash screen with no error message.
 

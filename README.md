@@ -222,7 +222,7 @@ package.name = habittracker
 package.domain = com.davs
 
 # Version information
-version = 0.1
+version = 0.1.2
 
 # Source files
 source.dir = .
@@ -892,7 +892,14 @@ This project is personal and educational. No license specified.
 
 ## Version History
 
-- **v0.1.0** (TBD) - MVP Release
+- **v0.1.2** (December 2024) - Bug Fix Release
+  - Fixed date conversion bug in completion tracking
+  - Updated version across codebase
+- **v0.1.1** (December 2024) - Critical Build Fixes
+  - Fixed missing KivyMD dependencies (filetype, pillow)
+  - Fixed Python 3.11 type hint compatibility
+  - Fixed Window.size crash on Android
+- **v0.1.0** (December 2024) - MVP Release
   - Basic habit creation and tracking
   - Local SQLite storage
   - Simple list view
