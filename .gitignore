@@ -14,6 +14,11 @@ bin/*.aab
 build/
 dist/
 
+# Android signing (keep keystores private!)
+.android/
+*.keystore
+*.jks
+
 # IDE
 .vscode/
 .idea/
@@ -26,5 +31,4 @@ Thumbs.db
 
 # Local testing
 habitforge.db
-test_*.py
 EOF

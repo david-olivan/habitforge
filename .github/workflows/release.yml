@@ -30,7 +30,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Step 4: Cache Buildozer dependencies
+      # Step 4: Setup debug keystore from secrets
+      - name: Setup Debug Keystore
+        run: |
+          mkdir -p .android
+          echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 -d > .android/debug.keystore
+          echo "✓ Debug keystore restored from secrets"
+
+      # Step 5: Cache Buildozer dependencies
       - name: Cache Buildozer
         uses: actions/cache@v4
         with:
@@ -39,13 +46,18 @@ jobs:
           restore-keys: |
             buildozer-
 
-      # Step 5: Build Android APK with Docker
+      # Step 6: Build Android APK with Docker and custom keystore
       - name: Build Android APK
         run: |
-          echo "Building APK with Docker..."
+          echo "Building APK with Docker and custom debug keystore..."
           docker run --rm \
             -v "$(pwd):/home/user/hostcwd" \
             -v "$HOME/.buildozer:/home/user/.buildozer" \
+            -v "$(pwd)/.android:/home/user/.android:ro" \
+            -e P4A_RELEASE_KEYSTORE="/home/user/.android/debug.keystore" \
+            -e P4A_RELEASE_KEYSTORE_PASSWD="android" \
+            -e P4A_RELEASE_KEYALIAS="androiddebugkey" \
+            -e P4A_RELEASE_KEYALIAS_PASSWD="android" \
             kivy/buildozer \
             --verbose android debug
 
