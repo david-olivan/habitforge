@@ -33,7 +33,7 @@ echo ""
 docker run --rm \
   -v "$(pwd):/home/user/hostcwd" \
   -v "$HOME/.buildozer:/home/user/.buildozer" \
-  -v "$(pwd)/.android:/home/user/.android:ro" \
+  -v "$(pwd)/.android:/home/user/.android" \
   -e P4A_RELEASE_KEYSTORE="/home/user/.android/debug.keystore" \
   -e P4A_RELEASE_KEYSTORE_PASSWD="android" \
   -e P4A_RELEASE_KEYALIAS="androiddebugkey" \

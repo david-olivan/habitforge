@@ -25,7 +25,7 @@ $buildozerPath = "$env:USERPROFILE\.buildozer"
 docker run --rm `
   -v "${PWD}:/home/user/hostcwd" `
   -v "$buildozerPath:/home/user/.buildozer" `
-  -v "${androidPath}:/home/user/.android:ro" `
+  -v "${androidPath}:/home/user/.android" `
   -e P4A_RELEASE_KEYSTORE="/home/user/.android/debug.keystore" `
   -e P4A_RELEASE_KEYSTORE_PASSWD="android" `
   -e P4A_RELEASE_KEYALIAS="androiddebugkey" `
