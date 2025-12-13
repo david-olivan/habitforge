@@ -18,6 +18,7 @@ from datetime import date
 
 from models.database import get_all_habits
 from logic.completion_manager import log_completion, get_habit_progress
+from logic.streak_calculator import calculate_streak
 from components.habit_card import HabitCard
 from config.constants import GOAL_TYPE_LABELS, BRAND_PRIMARY_RGB
 from kivy.logger import Logger
@@ -169,14 +170,20 @@ class MainScreen(MDScreen):
         self.render_habit_sections()
 
     def load_progress_data(self):
-        """Calculate progress for all habits."""
+        """Calculate progress and streaks for all habits."""
         for habit in self.habits:
+            # Calculate progress
             progress = get_habit_progress(
                 habit.id, habit.goal_count, habit.goal_type
             )
+
+            # Calculate streak
+            streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
+            progress['streak'] = streak
+
             self.progress_data[habit.id] = progress
             Logger.debug(
-                f"MainScreen: Progress for '{habit.name}': {progress['current_count']}/{progress['goal_count']}"
+                f"MainScreen: Progress for '{habit.name}': {progress['current_count']}/{progress['goal_count']}, Streak: {streak}"
             )
 
     def render_habit_sections(self):
@@ -314,22 +321,15 @@ class MainScreen(MDScreen):
     def navigate_to_add_habit(self, button):
         """Navigate to the habit form screen to add a new habit."""
         Logger.info("MainScreen: Navigating to habit form")
-        # When embedded in bottom nav, need to access parent's manager
-        screen_manager = self.manager
-        if not screen_manager and self.parent:
-            # Traverse up to find the screen manager
-            current = self.parent
-            while current:
-                if hasattr(current, 'manager') and current.manager:
-                    screen_manager = current.manager
-                    break
-                current = current.parent if hasattr(current, 'parent') else None
 
-        if screen_manager:
-            Logger.info("MainScreen: Found screen manager, switching to habit_form")
-            screen_manager.current = "habit_form"
+        # Get the App instance to access the root screen manager
+        from kivy.app import App
+        app = App.get_running_app()
+        if app and app.root:
+            Logger.info("MainScreen: Found app root screen manager, switching to habit_form")
+            app.root.current = "habit_form"
         else:
-            Logger.error("MainScreen: Could not find screen manager")
+            Logger.error("MainScreen: Could not find app root screen manager")
 
     def refresh_on_return(self):
         """

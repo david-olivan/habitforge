@@ -9,11 +9,12 @@ from kivymd.uix.card import MDCard
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDIconButton
+from kivymd.icon_definitions import md_icons
 from kivy.properties import DictProperty, ObjectProperty, NumericProperty
 from kivy.utils import get_color_from_hex
 from kivy.graphics import Color, Rectangle
 from kivy.metrics import dp
-from config.constants import GOAL_TYPE_LABELS, BRAND_PRIMARY_RGB
+from config.constants import GOAL_TYPE_LABELS, BRAND_PRIMARY_RGB, BRAND_FLAME_MID, hex_to_rgba
 
 
 class HabitCard(MDCard):
@@ -109,8 +110,29 @@ class HabitCard(MDCard):
             theme_text_color="Secondary",
         )
 
+        # Streak icon (flame)
+        self.streak_icon = MDLabel(
+            text="🔥",  # Fire emoji as fallback, will use icon if available
+            font_style="Caption",
+            theme_text_color="Custom",
+            text_color=(0.5, 0.5, 0.5, 1),  # Grey default
+            size_hint_x=None,
+            width=dp(24),
+        )
+
+        # Streak count label
+        self.streak_label = MDLabel(
+            text="0",
+            font_style="Caption",
+            theme_text_color="Secondary",
+            size_hint_x=None,
+            width=dp(20),
+        )
+
         info_layout.add_widget(self.goal_type_label)
         info_layout.add_widget(self.progress_label)
+        info_layout.add_widget(self.streak_icon)
+        info_layout.add_widget(self.streak_label)
 
         # Goal met indicator
         self.goal_met_label = MDLabel(
@@ -196,6 +218,17 @@ class HabitCard(MDCard):
             self.goal_met_label.text = "Goal met!"
         else:
             self.goal_met_label.text = ""
+
+        # Update streak display
+        streak = self.progress.get("streak", 0)
+        self.streak_label.text = str(streak)
+
+        if streak > 0:
+            # Active streak - pale orange (brand flame color)
+            self.streak_icon.text_color = hex_to_rgba(BRAND_FLAME_MID)
+        else:
+            # No streak - grey
+            self.streak_icon.text_color = (0.5, 0.5, 0.5, 1)
 
     def _on_increment_pressed(self, button):
         """Handle increment button press."""

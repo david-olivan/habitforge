@@ -56,8 +56,10 @@ habitforge/
 ✅ **PRD Section 2.1.2 - Completion Tracking: COMPLETED**
 ✅ **PRD Section 2.1.3 - Habit List Display: COMPLETED**
 ✅ **PRD Section 2.1.4 - Data Persistence: COMPLETED**
+✅ **PRD Section 2.2.1 - Streak Tracking: COMPLETED**
 
 🎉 **MVP PHASE 1 COMPLETE** - All vital features implemented!
+🔥 **PHASE 2 STARTED** - Streak tracking feature complete!
 
 **Implemented Files:**
 
@@ -70,6 +72,7 @@ habitforge/
 - ✅ [app/logic/habit_manager.py](app/logic/habit_manager.py) - Habit validation and business rules
 - ✅ [app/logic/date_utils.py](app/logic/date_utils.py) - Date period calculations (daily/weekly/monthly)
 - ✅ [app/logic/completion_manager.py](app/logic/completion_manager.py) - Completion tracking and progress calculation
+- ✅ [app/logic/streak_calculator.py](app/logic/streak_calculator.py) - Streak calculation (consecutive periods of goal completion)
 
 **UI Components:**
 - ✅ [app/components/color_picker.py](app/components/color_picker.py) - HabitColorPicker widget (4×2 grid)
@@ -111,6 +114,15 @@ habitforge/
 - ✅ Automatic list refresh after habit save
 - ✅ Completions table with UPSERT operations
 - ✅ Foreign key CASCADE delete
+
+**Streak Tracking (2.2.1):**
+- ✅ Calculate consecutive periods with goal met (backward walking algorithm)
+- ✅ Exclude current period from streak count until complete
+- ✅ Display flame icon (🔥) on HabitCard next to progress
+- ✅ Grey icon for no streak (0), pale orange for active streak (>0)
+- ✅ On-demand calculation (no database storage, zero migration risk)
+- ✅ Handles daily, weekly, and monthly goal types correctly
+- ✅ Streak breaks naturally at first incomplete period
 
 **Testing Status:**
 - ⏸️ Not yet tested (implementation complete, awaiting testing)
@@ -291,10 +303,23 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 12. **FloatLayout for FAB**: Use FloatLayout to allow FAB to truly float above scrollable content instead of taking up layout space in MDBoxLayout
 
 ## Current Task
-**No active task.** Sections 2.1.1 and 2.1.2 implementation complete.
+**COMPLETED: PRD Section 2.2.1 - Streak Tracking** ✅
+
+Implemented consecutive period tracking for habits with:
+- ✅ On-demand streak calculation (no database changes)
+- ✅ Backward walking algorithm from previous period
+- ✅ Flame icon display with color states (grey/orange)
+- ✅ Works for daily, weekly, and monthly habits
+- ✅ Current period excluded until complete
+- ✅ Streak breaks at first incomplete period
+
+**Implementation Details:**
+- New file: [app/logic/streak_calculator.py](app/logic/streak_calculator.py)
+- Modified: [app/views/main_screen.py](app/views/main_screen.py) - streak calculation integration
+- Modified: [app/components/habit_card.py](app/components/habit_card.py) - flame icon display
+- Test script: [test_streak_manual.py](test_streak_manual.py)
 
 **Next Potential Tasks** (from PRD, not started):
-- Section 2.2.1: Streak Tracking
 - Section 2.2.2: Calendar Heatmap Visualization
 - Section 2.2.3: Week Navigation
 - Section 2.2.4: Collapsible Sections
