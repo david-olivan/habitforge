@@ -386,6 +386,9 @@ def increment_completion(
         with get_connection() as conn:
             cursor = conn.cursor()
 
+            # Convert date to ISO format string for Python 3.12+ compatibility
+            date_str = completion_date.isoformat()
+
             # Use UPSERT to insert or update
             cursor.execute(
                 """
@@ -394,7 +397,7 @@ def increment_completion(
                 ON CONFLICT(habit_id, date)
                 DO UPDATE SET count = count + ?
                 """,
-                (habit_id, completion_date, amount, amount),
+                (habit_id, date_str, amount, amount),
             )
             conn.commit()
 
@@ -405,7 +408,7 @@ def increment_completion(
                 FROM completions
                 WHERE habit_id = ? AND date = ?
                 """,
-                (habit_id, completion_date),
+                (habit_id, date_str),
             )
 
             row = cursor.fetchone()
@@ -448,6 +451,9 @@ def decrement_completion(
         with get_connection() as conn:
             cursor = conn.cursor()
 
+            # Convert date to ISO format string for Python 3.12+ compatibility
+            date_str = completion_date.isoformat()
+
             # Update count, ensuring it doesn't go below 0
             cursor.execute(
                 """
@@ -455,7 +461,7 @@ def decrement_completion(
                 SET count = MAX(0, count - ?)
                 WHERE habit_id = ? AND date = ?
                 """,
-                (amount, habit_id, completion_date),
+                (amount, habit_id, date_str),
             )
             conn.commit()
 
@@ -472,7 +478,7 @@ def decrement_completion(
                 FROM completions
                 WHERE habit_id = ? AND date = ?
                 """,
-                (habit_id, completion_date),
+                (habit_id, date_str),
             )
 
             row = cursor.fetchone()
@@ -507,13 +513,15 @@ def get_completion_for_date(
     try:
         with get_connection() as conn:
             cursor = conn.cursor()
+            # Convert date to ISO format string for Python 3.12+ compatibility
+            date_str = completion_date.isoformat()
             cursor.execute(
                 """
                 SELECT id, habit_id, date, count, completed_at
                 FROM completions
                 WHERE habit_id = ? AND date = ?
                 """,
-                (habit_id, completion_date),
+                (habit_id, date_str),
             )
 
             row = cursor.fetchone()
@@ -550,7 +558,11 @@ def get_completions_for_habit(
         with get_connection() as conn:
             cursor = conn.cursor()
 
-            if start_date and end_date:
+            # Convert dates to ISO format strings for Python 3.12+ compatibility
+            start_str = start_date.isoformat() if start_date else None
+            end_str = end_date.isoformat() if end_date else None
+
+            if start_str and end_str:
                 cursor.execute(
                     """
                     SELECT id, habit_id, date, count, completed_at
@@ -558,9 +570,9 @@ def get_completions_for_habit(
                     WHERE habit_id = ? AND date BETWEEN ? AND ?
                     ORDER BY date DESC
                     """,
-                    (habit_id, start_date, end_date),
+                    (habit_id, start_str, end_str),
                 )
-            elif start_date:
+            elif start_str:
                 cursor.execute(
                     """
                     SELECT id, habit_id, date, count, completed_at
@@ -568,9 +580,9 @@ def get_completions_for_habit(
                     WHERE habit_id = ? AND date >= ?
                     ORDER BY date DESC
                     """,
-                    (habit_id, start_date),
+                    (habit_id, start_str),
                 )
-            elif end_date:
+            elif end_str:
                 cursor.execute(
                     """
                     SELECT id, habit_id, date, count, completed_at
@@ -578,7 +590,7 @@ def get_completions_for_habit(
                     WHERE habit_id = ? AND date <= ?
                     ORDER BY date DESC
                     """,
-                    (habit_id, end_date),
+                    (habit_id, end_str),
                 )
             else:
                 cursor.execute(
@@ -622,6 +634,9 @@ def get_completions_for_date_range(
     try:
         with get_connection() as conn:
             cursor = conn.cursor()
+            # Convert dates to ISO format strings for Python 3.12+ compatibility
+            start_str = start_date.isoformat()
+            end_str = end_date.isoformat()
             cursor.execute(
                 """
                 SELECT id, habit_id, date, count, completed_at
@@ -629,7 +644,7 @@ def get_completions_for_date_range(
                 WHERE date BETWEEN ? AND ?
                 ORDER BY habit_id, date DESC
                 """,
-                (start_date, end_date),
+                (start_str, end_str),
             )
 
             rows = cursor.fetchall()
