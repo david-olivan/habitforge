@@ -100,8 +100,9 @@ class MainScreen(MDScreen):
         float_container.add_widget(scroll)
 
         # FAB button (Add Habit) - floats above scroll
-        # Adjust position to avoid bottom nav overlap when embedded
-        fab_y_pos = 0.08 if self.embedded else 0.1  # More distance from bottom nav
+        # Adjust position to avoid bottom nav and safe area overlap when embedded
+        # Bottom safe area (5%) + bottom nav (~8%) = 13% total clearance needed
+        fab_y_pos = 0.13 if self.embedded else 0.15  # More distance from bottom nav and safe area
         self.fab = MDFloatingActionButton(
             icon="plus",
             md_bg_color=BRAND_PRIMARY_RGB,  # Brand orange
@@ -297,6 +298,11 @@ class MainScreen(MDScreen):
 
         # Recalculate progress
         progress = get_habit_progress(habit.id, habit.goal_count, habit.goal_type)
+
+        # Recalculate streak (same as load_progress_data)
+        streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
+        progress['streak'] = streak
+
         self.progress_data[habit_id] = progress
 
         # Update the card
@@ -304,7 +310,7 @@ class MainScreen(MDScreen):
         if card:
             card.progress = progress
             Logger.debug(
-                f"MainScreen: Updated card for habit '{habit.name}' with new progress"
+                f"MainScreen: Updated card for habit '{habit.name}' with new progress (streak: {streak})"
             )
 
     def show_error(self, message: str):

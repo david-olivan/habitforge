@@ -9,6 +9,7 @@ from kivymd.uix.card import MDCard
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDIconButton
+from kivymd.uix.label import MDIcon
 from kivymd.icon_definitions import md_icons
 from kivy.properties import DictProperty, ObjectProperty, NumericProperty
 from kivy.utils import get_color_from_hex
@@ -110,29 +111,42 @@ class HabitCard(MDCard):
             theme_text_color="Secondary",
         )
 
-        # Streak icon (flame)
-        self.streak_icon = MDLabel(
-            text="🔥",  # Fire emoji as fallback, will use icon if available
-            font_style="Caption",
-            theme_text_color="Custom",
-            text_color=(0.5, 0.5, 0.5, 1),  # Grey default
+        # Streak container - groups number and icon tightly together
+        streak_container = MDBoxLayout(
+            orientation="horizontal",
             size_hint_x=None,
-            width=dp(24),
+            width=dp(40),  # Tight container for number + icon
+            spacing=dp(2),  # Minimal spacing between number and icon
+            padding=[dp(4), 0, 0, 0],  # Small left padding to separate from progress
         )
 
-        # Streak count label
+        # Streak count label (number before icon)
         self.streak_label = MDLabel(
             text="0",
             font_style="Caption",
-            theme_text_color="Secondary",
+            theme_text_color="Custom",
+            text_color=(0.5, 0.5, 0.5, 1),  # Grey default, will update with streak
             size_hint_x=None,
-            width=dp(20),
+            width=dp(12),  # Tight width for number
+            halign="right",
         )
+
+        # Streak icon (flame) - using Material Design Icons (MDIcon for static display)
+        self.streak_icon = MDIcon(
+            icon="fire",  # Material Design fire icon
+            theme_text_color="Custom",  # MDIcon uses text_color (it's label-based)
+            text_color=(0.5, 0.5, 0.5, 1),  # Grey default
+            size_hint=(None, None),
+            size=(dp(20), dp(20)),  # Slightly smaller for better alignment
+            pos_hint={"center_y": 0.6},  # Vertically center in container
+        )
+
+        streak_container.add_widget(self.streak_label)
+        streak_container.add_widget(self.streak_icon)
 
         info_layout.add_widget(self.goal_type_label)
         info_layout.add_widget(self.progress_label)
-        info_layout.add_widget(self.streak_icon)
-        info_layout.add_widget(self.streak_label)
+        info_layout.add_widget(streak_container)
 
         # Goal met indicator
         self.goal_met_label = MDLabel(
@@ -224,11 +238,15 @@ class HabitCard(MDCard):
         self.streak_label.text = str(streak)
 
         if streak > 0:
-            # Active streak - pale orange (brand flame color)
-            self.streak_icon.text_color = hex_to_rgba(BRAND_FLAME_MID)
+            # Active streak - pale orange (brand flame color) for BOTH label and icon
+            flame_color = hex_to_rgba(BRAND_FLAME_MID)
+            self.streak_label.text_color = flame_color  # Label uses text_color
+            self.streak_icon.text_color = flame_color   # MDIcon also uses text_color (it's label-based!)
         else:
-            # No streak - grey
-            self.streak_icon.text_color = (0.5, 0.5, 0.5, 1)
+            # No streak - grey for both
+            grey_color = (0.5, 0.5, 0.5, 1)
+            self.streak_label.text_color = grey_color
+            self.streak_icon.text_color = grey_color
 
     def _on_increment_pressed(self, button):
         """Handle increment button press."""

@@ -13,6 +13,7 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.spinner import Spinner
 from kivy.metrics import dp
 from kivy.logger import Logger
+from kivy.core.window import Window
 
 from models.database import create_habit, get_habit_by_id, update_habit
 from logic.habit_manager import validate_habit_for_save
@@ -59,9 +60,15 @@ class HabitFormScreen(MDScreen):
 
     def _build_ui(self):
         """Build the form user interface."""
-        # Main container
+        # Add safe area padding (5% top, 5% bottom)
+        top_padding = Window.height * 0.05
+        bottom_padding = Window.height * 0.05
+
+        # Main container with safe area padding
         container = MDBoxLayout(
-            orientation="vertical", padding=dp(20), spacing=dp(16)
+            orientation="vertical",
+            padding=[dp(20), top_padding, dp(20), bottom_padding],  # left, top, right, bottom
+            spacing=dp(16)
         )
 
         # Title

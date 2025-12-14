@@ -2,7 +2,7 @@
 Streak Calculation for HabitForge
 
 This module calculates consecutive periods of goal completion (streaks)
-for habits. Streaks count backward from the previous period (current excluded)
+for habits. Streaks count backward from the current period (included if goal met)
 until an incomplete period is found.
 """
 
@@ -23,8 +23,8 @@ def calculate_streak(
     """
     Calculate the current streak for a habit.
 
-    A streak is the number of consecutive periods (excluding the current period)
-    where the goal was met (total completions >= goal_count).
+    A streak is the number of consecutive periods where the goal was met
+    (total completions >= goal_count). Includes the current period if goal is met.
 
     Args:
         habit_id: The ID of the habit
@@ -32,10 +32,10 @@ def calculate_streak(
         goal_count: The target count per period
 
     Returns:
-        int: Streak count (0 if no streak or no previous complete periods)
+        int: Streak count (0 if no streak)
 
     Algorithm:
-        1. Start from the previous period (current period excluded per PRD)
+        1. Start from the current period (include if goal is met)
         2. For each period going backward:
             a. Get completions in that period
             b. If total >= goal_count: increment streak, continue to previous period
@@ -44,23 +44,23 @@ def calculate_streak(
 
     Edge Cases:
         - No completions: Returns 0
-        - Habit just created: Returns 0 (no previous complete periods)
+        - Habit just created: Returns 0 (no complete periods)
         - Very long streaks: Safety limit of 3650 iterations (10 years daily)
 
     Example:
         Daily habit with goal 3/day:
-        - Today: 2/3 (incomplete, excluded)
+        - Today: 3/3 ✓ (included in streak)
         - Yesterday: 3/3 ✓
         - 2 days ago: 3/3 ✓
         - 3 days ago: 1/3 ✗ (breaks streak)
-        Result: Streak = 2
+        Result: Streak = 3
     """
     try:
         streak = 0
         today = get_today()
 
-        # Start from the previous period (current period excluded)
-        period_date = get_previous_period_start(today, goal_type)
+        # Start from the current period (include current period)
+        period_date = today
 
         # Safety limit to prevent infinite loops
         # Daily: 3650 days (~10 years), Weekly: 520 weeks (~10 years), Monthly: 120 months (~10 years)

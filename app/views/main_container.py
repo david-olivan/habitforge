@@ -9,8 +9,8 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.bottomnavigation import MDBottomNavigation, MDBottomNavigationItem
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivy.uix.image import Image
 from kivy.metrics import dp
+from kivy.core.window import Window
 
 from views.main_screen import MainScreen
 from views.analytics_content import AnalyticsContent
@@ -38,55 +38,25 @@ class MainContainerScreen(MDScreen):
         # Main layout
         layout = MDBoxLayout(orientation="vertical")
 
-        # Top App Bar with logo
-        toolbar_layout = MDBoxLayout(
-            orientation="horizontal",
+        # Top safe area (5% of screen height for status bar)
+        top_padding_height = Window.height * 0.05
+        top_safe_area = MDBoxLayout(
             size_hint_y=None,
-            height=dp(56),
-            md_bg_color=BRAND_PRIMARY_RGB,  # Brand orange from logo
-            padding=[dp(16), 0, dp(16), 0],
+            height=top_padding_height,
+            md_bg_color=BRAND_PRIMARY_RGB,  # Match toolbar color
         )
+        layout.add_widget(top_safe_area)
 
-        # Logo icon with shadow effect
-        logo_container = MDBoxLayout(
-            size_hint=(None, None),
-            size=(dp(40), dp(40)),
-            pos_hint={"center_y": 0.5},
-        )
-
-        # Add shadow using canvas instructions
-        from kivy.graphics import Color, Ellipse
-        with logo_container.canvas.before:
-            Color(0, 0, 0, 0.3)  # Semi-transparent black shadow
-            self.logo_shadow = Ellipse(
-                pos=(logo_container.x + dp(1), logo_container.y - dp(1)),
-                size=(dp(36), dp(36))
-            )
-
-        logo = Image(
-            source="assets/icons/habitforge-icon-48.png",
-            size_hint=(None, None),
-            size=(dp(32), dp(32)),
-            pos_hint={"center_x": 0.5, "center_y": 0.5},
-        )
-        logo_container.add_widget(logo)
-
-        # Bind to update shadow position when layout changes
-        def update_shadow(*args):
-            self.logo_shadow.pos = (logo_container.x + dp(1), logo_container.y - dp(1))
-            self.logo_shadow.size = (dp(36), dp(36))
-        logo_container.bind(pos=update_shadow, size=update_shadow)
-
-        toolbar_layout.add_widget(logo_container)
-
-        # App title
+        # App title bar (no logo, just title)
         self.toolbar = MDTopAppBar(
             title="HabitForge",
-            md_bg_color=BRAND_PRIMARY_RGB,  # Same brand orange
+            md_bg_color=BRAND_PRIMARY_RGB,  # Brand orange
             specific_text_color=(1, 1, 1, 1),  # White text
             elevation=0,
+            size_hint_y=None,
+            height=dp(56),
         )
-        toolbar_layout.add_widget(self.toolbar)
+        layout.add_widget(self.toolbar)
 
         # Bottom Navigation
         bottom_nav = MDBottomNavigation(
@@ -121,7 +91,17 @@ class MainContainerScreen(MDScreen):
         bottom_nav.add_widget(analytics_tab)
         bottom_nav.add_widget(account_tab)
 
-        # Assemble layout
-        layout.add_widget(toolbar_layout)
+        # Add bottom navigation to layout
         layout.add_widget(bottom_nav)
+
+        # Bottom safe area (5% of screen height for navigation gesture bar)
+        bottom_padding_height = Window.height * 0.05
+        bottom_safe_area = MDBoxLayout(
+            size_hint_y=None,
+            height=bottom_padding_height,
+            md_bg_color=(1, 1, 1, 1),  # Match bottom nav background (white)
+        )
+        layout.add_widget(bottom_safe_area)
+
+        # Assemble layout
         self.add_widget(layout)
