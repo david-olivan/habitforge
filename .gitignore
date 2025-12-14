@@ -32,3 +32,6 @@ Thumbs.db
 # Local testing
 habitforge.db
 EOF
+
+# Locales
+docs/Prompts para Claude.txt
