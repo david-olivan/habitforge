@@ -11,6 +11,7 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDIconButton, MDFlatButton
 from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.tab import MDTabs, MDTabsBase
+from kivymd.uix.gridlayout import MDGridLayout
 from kivy.metrics import dp
 from kivy.properties import StringProperty, ObjectProperty
 from kivy.clock import Clock
@@ -114,10 +115,12 @@ class HabitHeatmapCard(MDCard):
         # Card styling
         self.orientation = "vertical"
         self.size_hint_y = None
+        self.size_hint_x = None
+        self.width = dp(180)  # Fixed width to fit 2 per row
         self.height = dp(200)  # Will adjust based on content
-        self.padding = dp(16)
-        self.spacing = dp(12)
-        self.elevation = 1
+        self.padding = dp(6)
+        self.spacing = dp(4)
+        self.elevation = 0.25
         self.radius = dp(8)
 
         # Build UI
@@ -131,15 +134,15 @@ class HabitHeatmapCard(MDCard):
         # Header layout (horizontal)
         header = MDBoxLayout(
             orientation="horizontal",
-            spacing=dp(12),
+            spacing=dp(4),
             size_hint_y=None,
-            height=dp(32)
+            height=dp(24)
         )
 
         # Habit name with color indicator
         habit_name_container = MDBoxLayout(
             orientation="horizontal",
-            spacing=dp(8),
+            spacing=dp(4),
             size_hint_x=0.7
         )
 
@@ -150,7 +153,7 @@ class HabitHeatmapCard(MDCard):
             theme_text_color="Custom",
             text_color=hex_to_rgba(self.habit['color']),
             size_hint_x=None,
-            width=dp(24)
+            width=dp(16)
         )
         habit_name_container.add_widget(color_indicator)
 
@@ -158,7 +161,7 @@ class HabitHeatmapCard(MDCard):
         habit_name = MDLabel(
             text=self.habit['name'],
             theme_text_color="Primary",
-            font_style="Subtitle1",
+            font_style="Caption",
             bold=True
         )
         habit_name_container.add_widget(habit_name)
@@ -169,7 +172,8 @@ class HabitHeatmapCard(MDCard):
         self.percentage_label = MDLabel(
             text="0%",
             theme_text_color="Secondary",
-            font_style="H6",
+            font_style="Caption",
+            font_size="9sp",
             halign="right",
             size_hint_x=0.3
         )
@@ -224,9 +228,9 @@ class HabitHeatmapCard(MDCard):
             )
 
             # Adjust card height based on grid
-            header_height = dp(32)
-            spacing = dp(12) * 2  # Top and bottom spacing
-            padding = dp(16) * 2  # Top and bottom padding
+            header_height = dp(24)
+            spacing = dp(4) * 2  # Top and bottom spacing
+            padding = dp(6) * 2  # Top and bottom padding
 
             # Ensure heatmap_grid.height is a scalar value
             grid_height = self.heatmap_grid.height
@@ -311,10 +315,10 @@ class AnalyticsContent(MDBoxLayout):
 
         # Scrollable content area
         scroll = MDScrollView(size_hint=(1, 1))
-        self.heatmaps_container = MDBoxLayout(
-            orientation="vertical",
-            spacing=dp(16),
-            padding=dp(16),
+        self.heatmaps_container = MDGridLayout(
+            cols=2,  # 2 cards per row
+            spacing=dp(8),
+            padding=dp(8),
             size_hint_y=None
         )
         self.heatmaps_container.bind(

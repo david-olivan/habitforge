@@ -135,20 +135,14 @@ class HeatmapGrid(GridLayout):
             return (7, 1, start, end)
 
         elif view_type == "month":
-            # 7 columns, 4-6 rows (calendar grid)
+            # 7 columns, rows based on actual days in month (no padding)
             start, end = get_period_boundaries("monthly", reference_date)
 
-            # Pad to start on Monday, end on Sunday (full calendar weeks)
-            days_to_monday = start.weekday()  # 0=Monday, 6=Sunday
-            start_padded = start - timedelta(days=days_to_monday)
+            # No padding - just show actual month days
+            total_days = (end - start).days + 1
+            rows = (total_days + 6) // 7  # Ceiling division for rows needed
 
-            days_to_sunday = 6 - end.weekday()
-            end_padded = end + timedelta(days=days_to_sunday)
-
-            total_days = (end_padded - start_padded).days + 1
-            rows = total_days // 7
-
-            return (7, rows, start_padded, end_padded)
+            return (7, rows, start, end)
 
         elif view_type == "year":
             # Year view: Show full year as 53 weeks x 7 days (GitHub style)
