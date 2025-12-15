@@ -303,24 +303,27 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 12. **FloatLayout for FAB**: Use FloatLayout to allow FAB to truly float above scrollable content instead of taking up layout space in MDBoxLayout
 
 ## Current Task
-**COMPLETED: PRD Section 2.2.1 - Streak Tracking** ✅
+**IN PLANNING: PRD Section 2.2.2 - Calendar Heatmap Visualization** 🔄
 
-Implemented consecutive period tracking for habits with:
-- ✅ On-demand streak calculation (no database changes)
-- ✅ Backward walking algorithm from previous period
-- ✅ Flame icon display with color states (grey/orange)
-- ✅ Works for daily, weekly, and monthly habits
-- ✅ Current period excluded until complete
-- ✅ Streak breaks at first incomplete period
+Planning GitHub-style calendar heatmap for each habit showing completion patterns:
+- 🔄 GitHub-style grid with color intensity based on completion percentage
+- 🔄 Per-habit heatmaps using assigned habit colors
+- 🔄 Week/Month/Year view switcher
+- 🔄 Date navigation (Previous/Next/Today buttons)
+- 🔄 Current date indicator
+- 🔄 Zero database schema changes (read-only queries)
+- 🔄 Material Design 3 aesthetic
 
-**Implementation Details:**
-- New file: [app/logic/streak_calculator.py](app/logic/streak_calculator.py)
-- Modified: [app/views/main_screen.py](app/views/main_screen.py) - streak calculation integration
-- Modified: [app/components/habit_card.py](app/components/habit_card.py) - flame icon display
-- Test script: [test_streak_manual.py](test_streak_manual.py)
+**Planned Implementation:**
+- New file: [app/components/heatmap_cell.py](app/components/heatmap_cell.py) - Canvas-based cell widget
+- New file: [app/components/heatmap_grid.py](app/components/heatmap_grid.py) - Grid layout with dimension logic
+- New file: [app/logic/heatmap_data.py](app/logic/heatmap_data.py) - Data transformation and caching
+- Replace: [app/views/analytics_content.py](app/views/analytics_content.py) - Main screen with heatmaps
+
+**Previously Completed Tasks:**
+- ✅ Section 2.2.1: Streak Tracking (consecutive period tracking with flame icon)
 
 **Next Potential Tasks** (from PRD, not started):
-- Section 2.2.2: Calendar Heatmap Visualization
 - Section 2.2.3: Week Navigation
 - Section 2.2.4: Collapsible Sections
 - Section 2.2.5: Progress Statistics
