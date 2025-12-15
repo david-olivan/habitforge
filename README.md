@@ -222,7 +222,7 @@ package.name = habittracker
 package.domain = com.davs
 
 # Version information
-version = 0.1.2
+version = 0.1.3
 
 # Source files
 source.dir = .

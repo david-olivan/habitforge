@@ -303,6 +303,7 @@ class HabitCard(MDCard):
             # Goal met - show check icon with habit color background
             self.increment_btn.icon = "check"
             self.increment_btn.text_color = COLOR_WHITE
+            self.increment_btn.disabled = True  # Disable button when goal is met
 
             # Set button background to habit color
             if self.habit:
@@ -317,6 +318,7 @@ class HabitCard(MDCard):
             self.increment_btn.icon = "plus"
             self.increment_btn.text_color = COLOR_LIGHT_GREY
             self.btn_bg_color.rgba = COLOR_DARK_GREY
+            self.increment_btn.disabled = False  # Enable button when goal is not met
 
     def _on_increment_pressed(self, button):
         """Handle increment button press."""

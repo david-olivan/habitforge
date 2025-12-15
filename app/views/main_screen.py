@@ -125,6 +125,25 @@ class MainScreen(MDScreen):
         today = date.today()
         return today.strftime("Today: %A, %b %d")
 
+    def _get_icon_for_section(self, title: str) -> str:
+        """
+        Get the appropriate Material Design icon for a section title.
+
+        Args:
+            title: Section title (e.g., "Daily Goals")
+
+        Returns:
+            Icon name for KivyMD
+        """
+        if "Daily" in title:
+            return "calendar-today"
+        elif "Weekly" in title:
+            return "calendar-week"
+        elif "Monthly" in title:
+            return "calendar-month"
+        else:
+            return "calendar-blank"  # Fallback
+
     def on_enter(self, *args):
         """Called when screen is displayed."""
         Logger.info("MainScreen: Screen entered, loading habits")
@@ -221,15 +240,44 @@ class MainScreen(MDScreen):
         section = MDBoxLayout(orientation="vertical", spacing=dp(8), size_hint_y=None)
         section.bind(minimum_height=section.setter("height"))
 
-        # Section header
-        header = MDLabel(
-            text=f"{title} ({len(habits)})",
-            font_style="H6",
-            theme_text_color="Primary",
+        # Section header with icon
+        header_container = MDBoxLayout(
+            orientation="horizontal",
+            spacing=dp(8),
             size_hint_y=None,
             height=dp(32),
         )
-        section.add_widget(header)
+
+        # Determine icon based on title
+        icon_name = self._get_icon_for_section(title)
+
+        # Icon
+        from kivymd.uix.label import MDIcon
+        icon = MDIcon(
+            icon=icon_name,
+            theme_text_color="Custom",
+            text_color=(0.5, 0.5, 0.5, 1),
+            size_hint=(None, 1),  # Take full height for vertical alignment
+            width=dp(28),
+            halign="left",
+            valign="center",
+            pos_hint={"center_y": 0.5},
+        )
+        header_container.add_widget(icon)
+
+        # Title label
+        header = MDLabel(
+            text=f"{title} ({len(habits)})",
+            font_style="H6",
+            theme_text_color="Custom",
+            text_color=(0.5, 0.5, 0.5, 1),
+            size_hint_y=None,
+            height=dp(32),
+            valign="center",
+        )
+        header_container.add_widget(header)
+
+        section.add_widget(header_container)
 
         # Habit cards
         for habit in habits:
