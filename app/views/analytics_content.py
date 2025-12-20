@@ -53,7 +53,8 @@ class DateNavigationBar(MDBoxLayout):
         # Previous button
         self.prev_btn = MDIconButton(
             icon="chevron-left",
-            on_release=self._on_prev_clicked
+            on_release=self._on_prev_clicked,
+            pos_hint={"center_y": 0.5}
         )
         self.add_widget(self.prev_btn)
 
@@ -61,6 +62,7 @@ class DateNavigationBar(MDBoxLayout):
         self.date_label = MDLabel(
             text=self.date_label_text,
             halign="center",
+            valign="middle",
             theme_text_color="Primary",
             font_style="Subtitle1"
         )
@@ -77,7 +79,8 @@ class DateNavigationBar(MDBoxLayout):
         # Next button
         self.next_btn = MDIconButton(
             icon="chevron-right",
-            on_release=self._on_next_clicked
+            on_release=self._on_next_clicked,
+            pos_hint={"center_y": 0.5}
         )
         self.add_widget(self.next_btn)
 
