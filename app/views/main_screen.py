@@ -10,7 +10,7 @@ from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.label import MDLabel
-from kivymd.uix.button import MDFloatingActionButton
+from kivymd.uix.button import MDFloatingActionButton, MDIconButton
 from kivy.uix.floatlayout import FloatLayout
 from kivy.metrics import dp
 from kivy.clock import Clock
@@ -47,6 +47,8 @@ class MainScreen(MDScreen):
         self.monthly_habits = []
         self.progress_data = {}
         self.habit_cards = {}  # Map habit_id to HabitCard widget
+        self.section_collapsed = {}  # Track collapsed state per section (Daily/Weekly/Monthly)
+        self.section_widgets = {}  # Map section title to section widget for dynamic updates
 
         # Build UI
         self.build_ui()
@@ -228,6 +230,12 @@ class MainScreen(MDScreen):
         if self.monthly_habits:
             self.render_section("Monthly Goals", self.monthly_habits)
 
+        # Add bottom spacer to prevent FAB from covering last habit's buttons
+        # FAB clearance: 56dp (FAB) + 16dp (margin) + 16dp (safe scroll) = 88dp
+        from kivy.uix.widget import Widget
+        spacer = Widget(size_hint_y=None, height=dp(88))
+        self.sections_container.add_widget(spacer)
+
     def render_section(self, title: str, habits: list):
         """
         Render a section with a title and habit cards.
@@ -245,7 +253,7 @@ class MainScreen(MDScreen):
             orientation="horizontal",
             spacing=dp(8),
             size_hint_y=None,
-            height=dp(32),
+            height=dp(26),
         )
 
         # Determine icon based on title
@@ -268,34 +276,53 @@ class MainScreen(MDScreen):
         # Title label
         header = MDLabel(
             text=f"{title} ({len(habits)})",
-            font_style="H6",
+            font_style="Subtitle1",
             theme_text_color="Custom",
             text_color=(0.5, 0.5, 0.5, 1),
             size_hint_y=None,
-            height=dp(32),
+            height=dp(26),
             valign="center",
         )
         header_container.add_widget(header)
 
+        # Chevron button for collapse/expand
+        is_collapsed = self.section_collapsed.get(title, False)
+        chevron_icon = "chevron-right" if is_collapsed else "chevron-down"
+        chevron_button = MDIconButton(
+            icon=chevron_icon,
+            theme_text_color="Custom",
+            text_color=(0.5, 0.5, 0.5, 1),
+            size_hint=(None, 1),
+            width=dp(32),
+            pos_hint={"center_y": 0.5},
+        )
+        # Bind the toggle action - pass title, section, habits list, and chevron button
+        chevron_button.bind(on_release=lambda btn: self.toggle_section(title, section, habits, btn))
+        header_container.add_widget(chevron_button)
+
         section.add_widget(header_container)
 
-        # Habit cards
-        for habit in habits:
-            habit_dict = {
-                "id": habit.id,
-                "name": habit.name,
-                "color": habit.color,
-                "goal_type": habit.goal_type,
-                "goal_count": habit.goal_count,
-            }
-            progress_dict = self.progress_data.get(habit.id, {})
+        # Store section widget for dynamic updates
+        self.section_widgets[title] = section
 
-            Logger.debug(f"MainScreen: Creating card with on_increment callback: {self.on_increment}")
-            card = HabitCard(habit=habit_dict, progress=progress_dict)
-            card.on_increment = self.on_increment  # Set after creation
-            Logger.debug(f"MainScreen: Card created, card.on_increment={card.on_increment}")
-            self.habit_cards[habit.id] = card
-            section.add_widget(card)
+        # Habit cards (only render if section is not collapsed)
+        if not is_collapsed:
+            for habit in habits:
+                habit_dict = {
+                    "id": habit.id,
+                    "name": habit.name,
+                    "color": habit.color,
+                    "goal_type": habit.goal_type,
+                    "goal_count": habit.goal_count,
+                }
+                progress_dict = self.progress_data.get(habit.id, {})
+
+                Logger.debug(f"MainScreen: Creating card with on_increment callback: {self.on_increment}")
+                card = HabitCard(habit=habit_dict, progress=progress_dict)
+                card.on_increment = self.on_increment  # Set after creation
+                Logger.debug(f"MainScreen: Card created, card.on_increment={card.on_increment}")
+                self.habit_cards[habit.id] = card
+                section.add_widget(card)
 
         self.sections_container.add_widget(section)
 
@@ -371,6 +398,49 @@ class MainScreen(MDScreen):
         # For now, just log it. In future, could show a Snackbar
         Logger.error(f"MainScreen: Error - {message}")
         # TODO: Implement Snackbar or Toast notification
+
+    def toggle_section(self, section_title: str, section_widget, habits: list, chevron_button):
+        """
+        Toggle collapse/expand for a habit section.
+
+        Args:
+            section_title: Title of the section (e.g., "Daily Goals")
+            section_widget: The section's MDBoxLayout widget
+            habits: List of habits in this section
+            chevron_button: The MDIconButton chevron to update
+        """
+        # Toggle collapsed state
+        current_state = self.section_collapsed.get(section_title, False)
+        new_state = not current_state
+        self.section_collapsed[section_title] = new_state
+
+        Logger.info(f"MainScreen: Toggling section '{section_title}' - collapsed={new_state}")
+
+        # Update chevron icon
+        chevron_button.icon = "chevron-right" if new_state else "chevron-down"
+
+        # Clear section widgets (keep header, remove habit cards)
+        # The section has: [header_container, habit_card1, habit_card2, ...]
+        # We want to keep only the header_container at index 0
+        while len(section_widget.children) > 1:
+            section_widget.remove_widget(section_widget.children[0])  # Remove from top (last added)
+
+        # If expanding, re-add habit cards
+        if not new_state:
+            for habit in habits:
+                habit_dict = {
+                    "id": habit.id,
+                    "name": habit.name,
+                    "color": habit.color,
+                    "goal_type": habit.goal_type,
+                    "goal_count": habit.goal_count,
+                }
+                progress_dict = self.progress_data.get(habit.id, {})
+
+                card = HabitCard(habit=habit_dict, progress=progress_dict)
+                card.on_increment = self.on_increment
+                self.habit_cards[habit.id] = card
+                section_widget.add_widget(card)
 
     def navigate_to_add_habit(self, button):
         """Navigate to the habit form screen to add a new habit."""

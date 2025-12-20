@@ -303,29 +303,24 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 12. **FloatLayout for FAB**: Use FloatLayout to allow FAB to truly float above scrollable content instead of taking up layout space in MDBoxLayout
 
 ## Current Task
-**IN PLANNING: PRD Section 2.2.2 - Calendar Heatmap Visualization** 🔄
+**IN PLANNING: Main Screen UI Improvements** 🔄
 
-Planning GitHub-style calendar heatmap for each habit showing completion patterns:
-- 🔄 GitHub-style grid with color intensity based on completion percentage
-- 🔄 Per-habit heatmaps using assigned habit colors
-- 🔄 Week/Month/Year view switcher
-- 🔄 Date navigation (Previous/Next/Today buttons)
-- 🔄 Current date indicator
-- 🔄 Zero database schema changes (read-only queries)
-- 🔄 Material Design 3 aesthetic
+Planning three UI enhancements for the main screen:
+- 🔄 Reduce section header size by 20% (H6 → Subtitle1)
+- 🔄 Make Daily/Weekly/Monthly sections collapsible with chevron toggle
+- 🔄 Add bottom scroll padding to prevent FAB from covering habit buttons
 
-**Planned Implementation:**
-- New file: [app/components/heatmap_cell.py](app/components/heatmap_cell.py) - Canvas-based cell widget
-- New file: [app/components/heatmap_grid.py](app/components/heatmap_grid.py) - Grid layout with dimension logic
-- New file: [app/logic/heatmap_data.py](app/logic/heatmap_data.py) - Data transformation and caching
-- Replace: [app/views/analytics_content.py](app/views/analytics_content.py) - Main screen with heatmaps
+**Implementation scope:**
+- Single file: [app/views/main_screen.py](app/views/main_screen.py)
+- Zero database changes
+- Collapsed state resets on app restart (persistence deferred to future enhancement)
 
 **Previously Completed Tasks:**
 - ✅ Section 2.2.1: Streak Tracking (consecutive period tracking with flame icon)
+- ✅ Section 2.2.2: Calendar Heatmap Visualization (GitHub-style heatmaps with date navigation)
 
 **Next Potential Tasks** (from PRD, not started):
 - Section 2.2.3: Week Navigation
-- Section 2.2.4: Collapsible Sections
 - Section 2.2.5: Progress Statistics
 
 ## Known Issues
