@@ -31,6 +31,12 @@ class MainContainerScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.name = "main_container"
+
+        # Swipe gesture state
+        self.swipe_start_x = None
+        self.swipe_start_y = None
+        self.swipe_in_progress = False
+
         self.build_ui()
 
     def build_ui(self):
@@ -59,7 +65,7 @@ class MainContainerScreen(MDScreen):
         layout.add_widget(self.toolbar)
 
         # Bottom Navigation
-        bottom_nav = MDBottomNavigation(
+        self.bottom_nav = MDBottomNavigation(
             panel_color=(1, 1, 1, 1),  # White background
             selected_color_background=(0.3, 0.6, 0.9, 0.15),  # Light blue tint
             text_color_active=(0.3, 0.6, 0.9, 1),  # Blue for active tab
@@ -87,12 +93,12 @@ class MainContainerScreen(MDScreen):
         )
         account_tab.add_widget(AccountContent())
 
-        bottom_nav.add_widget(habits_tab)
-        bottom_nav.add_widget(analytics_tab)
-        bottom_nav.add_widget(account_tab)
+        self.bottom_nav.add_widget(habits_tab)
+        self.bottom_nav.add_widget(analytics_tab)
+        self.bottom_nav.add_widget(account_tab)
 
         # Add bottom navigation to layout
-        layout.add_widget(bottom_nav)
+        layout.add_widget(self.bottom_nav)
 
         # Bottom safe area (5% of screen height for navigation gesture bar)
         bottom_padding_height = Window.height * 0.05
@@ -105,3 +111,42 @@ class MainContainerScreen(MDScreen):
 
         # Assemble layout
         self.add_widget(layout)
+
+    def on_touch_down(self, touch):
+        """Capture swipe start position."""
+        self.swipe_start_x = touch.x
+        self.swipe_start_y = touch.y
+        self.swipe_in_progress = True
+        return super().on_touch_down(touch)
+
+    def on_touch_up(self, touch):
+        """Detect swipe gesture on release."""
+        if not self.swipe_in_progress:
+            return super().on_touch_up(touch)
+
+        # Calculate swipe delta
+        dx = touch.x - self.swipe_start_x
+        dy = touch.y - self.swipe_start_y
+
+        # Reset state
+        self.swipe_in_progress = False
+
+        # Swipe detection thresholds
+        MIN_SWIPE_DISTANCE = 100  # pixels (~25% of typical screen width)
+        MAX_VERTICAL_DEVIATION = 80  # pixels (distinguish from vertical scrolling)
+
+        # Check if horizontal swipe (not vertical scroll)
+        if abs(dx) > MIN_SWIPE_DISTANCE and abs(dy) < MAX_VERTICAL_DEVIATION:
+            current_tab = self.bottom_nav.current
+
+            # Swipe left: Habits -> Analytics
+            if dx < 0 and current_tab == "habits":
+                self.bottom_nav.switch_tab("analytics")
+                return True
+
+            # Swipe right: Analytics -> Habits
+            elif dx > 0 and current_tab == "analytics":
+                self.bottom_nav.switch_tab("habits")
+                return True
+
+        return super().on_touch_up(touch)
