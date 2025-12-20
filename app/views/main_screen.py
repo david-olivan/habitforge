@@ -20,6 +20,7 @@ from models.database import get_all_habits
 from logic.completion_manager import log_completion, get_habit_progress
 from logic.streak_calculator import calculate_streak
 from components.habit_card import HabitCard
+from components.date_strip import DateNavigationStrip
 from config.constants import GOAL_TYPE_LABELS, BRAND_PRIMARY_RGB
 from kivy.logger import Logger
 
@@ -50,6 +51,9 @@ class MainScreen(MDScreen):
         self.section_collapsed = {}  # Track collapsed state per section (Daily/Weekly/Monthly)
         self.section_widgets = {}  # Map section title to section widget for dynamic updates
 
+        # Date selection state (for 5-day navigation)
+        self.selected_date = date.today()
+
         # Build UI
         self.build_ui()
 
@@ -79,15 +83,10 @@ class MainScreen(MDScreen):
             minimum_height=self.content_layout.setter("height")
         )  # Make scrollable
 
-        # Date header
-        self.date_label = MDLabel(
-            text=self._format_today(),
-            font_style="Subtitle1",
-            theme_text_color="Secondary",
-            size_hint_y=None,
-            height=dp(32),
-        )
-        self.content_layout.add_widget(self.date_label)
+        # Date navigation strip (5-day selector)
+        self.date_strip = DateNavigationStrip(selected_date=self.selected_date)
+        self.date_strip.on_date_changed = self._on_date_selected
+        self.content_layout.add_widget(self.date_strip)
 
         # Placeholder for habit sections (will be populated in on_enter)
         self.sections_container = MDBoxLayout(
@@ -192,20 +191,20 @@ class MainScreen(MDScreen):
         self.render_habit_sections()
 
     def load_progress_data(self):
-        """Calculate progress and streaks for all habits."""
+        """Calculate progress and streaks for all habits using selected_date."""
         for habit in self.habits:
-            # Calculate progress
+            # Calculate progress for selected date
             progress = get_habit_progress(
-                habit.id, habit.goal_count, habit.goal_type
+                habit.id, habit.goal_count, habit.goal_type, self.selected_date
             )
 
-            # Calculate streak
+            # Calculate streak (always uses today, not selected_date)
             streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
             progress['streak'] = streak
 
             self.progress_data[habit.id] = progress
             Logger.debug(
-                f"MainScreen: Progress for '{habit.name}': {progress['current_count']}/{progress['goal_count']}, Streak: {streak}"
+                f"MainScreen: Progress for '{habit.name}' on {self.selected_date}: {progress['current_count']}/{progress['goal_count']}, Streak: {streak}"
             )
 
     def render_habit_sections(self):
@@ -342,16 +341,18 @@ class MainScreen(MDScreen):
         """
         Handle increment button press on a habit card.
 
+        Logs completion for the currently selected_date.
+
         Args:
             habit_id: The ID of the habit to increment
         """
-        Logger.info(f"MainScreen: Increment requested for habit ID {habit_id}")
+        Logger.info(f"MainScreen: Increment requested for habit ID {habit_id} on {self.selected_date}")
 
-        # Log the completion
-        success, error, completion = log_completion(habit_id)
+        # Log the completion for the selected date
+        success, error, completion = log_completion(habit_id, completion_date=self.selected_date)
 
         if success:
-            Logger.info(f"MainScreen: Completion logged successfully")
+            Logger.info(f"MainScreen: Completion logged successfully for {self.selected_date}")
             # Refresh progress for this habit
             self.refresh_habit_progress(habit_id)
         else:
@@ -360,7 +361,7 @@ class MainScreen(MDScreen):
 
     def refresh_habit_progress(self, habit_id: int):
         """
-        Reload progress for a single habit and update its card.
+        Reload progress for a single habit and update its card using selected_date.
 
         Args:
             habit_id: The ID of the habit to refresh
@@ -371,8 +372,8 @@ class MainScreen(MDScreen):
             Logger.warning(f"MainScreen: Habit ID {habit_id} not found for refresh")
             return
 
-        # Recalculate progress
-        progress = get_habit_progress(habit.id, habit.goal_count, habit.goal_type)
+        # Recalculate progress for selected date
+        progress = get_habit_progress(habit.id, habit.goal_count, habit.goal_type, self.selected_date)
 
         # Recalculate streak (same as load_progress_data)
         streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
@@ -385,7 +386,7 @@ class MainScreen(MDScreen):
         if card:
             card.progress = progress
             Logger.debug(
-                f"MainScreen: Updated card for habit '{habit.name}' with new progress (streak: {streak})"
+                f"MainScreen: Updated card for habit '{habit.name}' with new progress for {self.selected_date} (streak: {streak})"
             )
 
     def show_error(self, message: str):
@@ -463,3 +464,24 @@ class MainScreen(MDScreen):
         """
         Logger.info("MainScreen: Refreshing habits after return")
         self.load_habits()
+
+    def _on_date_selected(self, new_date: date):
+        """
+        Handle date change from DateNavigationStrip.
+
+        Reloads all progress data for the new selected date and refreshes all habit cards.
+
+        Args:
+            new_date: The newly selected date
+        """
+        Logger.info(f"MainScreen: Date changed to {new_date}")
+        self.selected_date = new_date
+
+        # Reload all progress for the new date
+        self.load_progress_data()
+
+        # Update all habit cards with new progress
+        for habit_id, card in self.habit_cards.items():
+            progress = self.progress_data.get(habit_id, {})
+            card.progress = progress
+            Logger.debug(f"MainScreen: Updated card for habit ID {habit_id} with progress for {new_date}")
