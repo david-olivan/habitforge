@@ -130,5 +130,5 @@ DATABASE_VERSION = 1
 # ============================================
 
 APP_NAME = "HabitForge"
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.1.4"
 APP_AUTHOR = "Davs"

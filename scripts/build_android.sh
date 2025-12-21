@@ -17,7 +17,7 @@ docker run --rm \
 if [ $? -eq 0 ]; then
     echo ""
     echo "Build complete! APK location:"
-    echo "  bin/habitforge-0.1.0-arm64-v8a-debug.apk"
+    echo "  bin/habitforge-*-arm64-v8a-debug.apk"
 else
     echo ""
     echo "Build failed! Check the log above for errors."

@@ -16,7 +16,7 @@ docker run --rm `
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""
     Write-Host "Build complete! APK location:" -ForegroundColor Green
-    Write-Host "  bin/habitforge-0.1.0-arm64-v8a-debug.apk"
+    Write-Host "  bin/habitforge-*-arm64-v8a-debug.apk"
 } else {
     Write-Host ""
     Write-Host "Build failed! Check the log above for errors." -ForegroundColor Red

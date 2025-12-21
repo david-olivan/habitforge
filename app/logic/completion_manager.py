@@ -16,6 +16,7 @@ from models.database import (
 )
 from models.schemas import Completion
 from logic.date_utils import get_today, get_period_boundaries
+from logic.heatmap_data import HeatmapDataCache
 from kivy.logger import Logger
 
 
@@ -75,6 +76,8 @@ def log_completion(
         Logger.info(
             f"CompletionManager: Logged {amount} completion(s) for habit {habit_id}"
         )
+        # Invalidate heatmap cache for this habit so analytics shows fresh data
+        HeatmapDataCache.invalidate_habit(habit_id)
         return (True, None, completion)
     else:
         error_msg = "Failed to log completion in database"

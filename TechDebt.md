@@ -101,13 +101,14 @@ This file tracks technical debt, deferred tasks, and future improvements for Hab
 
 ## Phase 2: Core Features
 
-- [ ] **Implement streak calculation**
+- [x] **Implement streak calculation**
   - Consecutive period completion tracking
   - Visual indicator (flame icon)
 
 - [ ] **Implement collapsible sections**
   - Expandable/collapsible habit groups
   - Smooth animations
+  - **Future enhancement**: Persist collapsed state in settings table across app sessions
 
 - [ ] **Implement week navigation**
   - Day selector strip (Mon-Sun)
