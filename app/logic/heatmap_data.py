@@ -21,6 +21,7 @@ class HeatmapDataCache:
     """
 
     _cache: Dict[Tuple[int, str, str], Dict[date, int]] = {}
+    _dirty_flag: bool = False  # Tracks if any cache was invalidated since last check
 
     @staticmethod
     def _get_key(habit_id: int, view_type: str, reference_date: date) -> Tuple[int, str, str]:
@@ -99,9 +100,25 @@ class HeatmapDataCache:
             del cls._cache[key]
 
         if keys_to_remove:
-            Logger.debug(
-                f"HeatmapDataCache: Invalidated {len(keys_to_remove)} cache entries for habit {habit_id}"
+            cls._dirty_flag = True  # Mark that cache has been invalidated
+            Logger.info(
+                f"HeatmapDataCache: Invalidated {len(keys_to_remove)} cache entries for habit {habit_id} (dirty flag set)"
             )
+        else:
+            Logger.info(
+                f"HeatmapDataCache: No cache entries to invalidate for habit {habit_id}"
+            )
+
+    @classmethod
+    def is_dirty(cls) -> bool:
+        """Check if cache has been invalidated since last check."""
+        return cls._dirty_flag
+
+    @classmethod
+    def clear_dirty_flag(cls):
+        """Clear the dirty flag after refreshing analytics."""
+        cls._dirty_flag = False
+        Logger.debug("HeatmapDataCache: Cleared dirty flag")
 
     @classmethod
     def clear(cls):

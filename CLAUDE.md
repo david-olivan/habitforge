@@ -3,7 +3,7 @@
 ## Project Context
 HabitForge is a privacy-focused, offline-first habit tracking application for Android built with Python and Kivy.
 
-## Current Project State (December 10, 2024)
+## Current Project State (December 10, 2025)
 
 ### Directory Structure
 ```
@@ -57,9 +57,11 @@ habitforge/
 ✅ **PRD Section 2.1.3 - Habit List Display: COMPLETED**
 ✅ **PRD Section 2.1.4 - Data Persistence: COMPLETED**
 ✅ **PRD Section 2.2.1 - Streak Tracking: COMPLETED**
+✅ **PRD Section 2.2.2 - Calendar Heatmap Visualization: COMPLETED**
+✅ **PRD Section 2.2.4 - Collapsible Sections: COMPLETED**
 
 🎉 **MVP PHASE 1 COMPLETE** - All vital features implemented!
-🔥 **PHASE 2 STARTED** - Streak tracking feature complete!
+🔥 **PHASE 2 IN PROGRESS** - Major features complete!
 
 **Implemented Files:**
 
@@ -124,6 +126,25 @@ habitforge/
 - ✅ Handles daily, weekly, and monthly goal types correctly
 - ✅ Streak breaks naturally at first incomplete period
 
+**Calendar Heatmap Visualization (2.2.2):**
+- ✅ GitHub-style grid showing completion patterns per habit
+- ✅ Color intensity based on completion percentage (0-100%)
+- ✅ Week/Month/Year view switcher
+- ✅ Date navigation (Previous/Next/Today buttons)
+- ✅ Current date indicator with border highlight
+- ✅ Per-habit heatmaps using assigned habit colors
+- ✅ Zero database schema changes (read-only queries)
+
+**Collapsible Sections (2.2.4):**
+- ✅ Chevron toggle button (KivyMD MDIconButton) on section headers
+- ✅ Click to collapse/expand Daily/Weekly/Monthly goal sections
+- ✅ Chevron icon rotation (chevron-down ↔ chevron-right)
+- ✅ Independent state per section
+- ✅ Smooth dynamic rendering (remove/add habit cards on toggle)
+- ✅ State stored in memory (resets on app restart)
+- ✅ Smaller section headers (20% reduction: H6 → Subtitle1, 32dp → 26dp)
+- ✅ Bottom scroll padding (88dp) to prevent FAB from covering habit buttons
+
 **Testing Status:**
 - ⏸️ Not yet tested (implementation complete, awaiting testing)
 
@@ -137,7 +158,7 @@ habitforge/
 - **Android NDK**: 26b (16KB page size support)
 - **Date/Time**: python-dateutil 2.9.0
 
-## Android Build Learnings (December 10, 2024)
+## Android Build Learnings (December 10, 2025)
 
 ### Critical Build Fixes - v0.1.3
 
@@ -303,25 +324,28 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 12. **FloatLayout for FAB**: Use FloatLayout to allow FAB to truly float above scrollable content instead of taking up layout space in MDBoxLayout
 
 ## Current Task
-**IN PLANNING: Main Screen UI Improvements** 🔄
+**READY FOR NEXT FEATURE** ✅
 
-Planning three UI enhancements for the main screen:
-- 🔄 Reduce section header size by 20% (H6 → Subtitle1)
-- 🔄 Make Daily/Weekly/Monthly sections collapsible with chevron toggle
-- 🔄 Add bottom scroll padding to prevent FAB from covering habit buttons
+All planned Phase 2 features complete except Week Navigation!
 
-**Implementation scope:**
-- Single file: [app/views/main_screen.py](app/views/main_screen.py)
-- Zero database changes
-- Collapsed state resets on app restart (persistence deferred to future enhancement)
+**Recently Completed:**
+- ✅ Real-time Analytics Refresh (December 21, 2025)
+  - Fixed heatmap not updating when completing habits
+  - Implemented smart cache dirty flag mechanism
+  - Analytics only refreshes when data changes (no unnecessary DB queries)
+  - Used KivyMD on_switch_tabs event for tab detection
 
 **Previously Completed Tasks:**
+- ✅ Section 2.2.4: Collapsible Sections (v0.1.4)
+  - Smaller section headers (20% reduction)
+  - Chevron toggle for collapse/expand
+  - Bottom scroll padding for FAB clearance
 - ✅ Section 2.2.1: Streak Tracking (consecutive period tracking with flame icon)
 - ✅ Section 2.2.2: Calendar Heatmap Visualization (GitHub-style heatmaps with date navigation)
 
-**Next Potential Tasks** (from PRD, not started):
-- Section 2.2.3: Week Navigation
-- Section 2.2.5: Progress Statistics
+**Remaining PRD Phase 2 Tasks:**
+- ⏸️ Section 2.2.3: Week Navigation (not started)
+- ⏸️ Section 2.2.5: Progress Statistics (not started)
 
 ## Known Issues
 - KivyMD 1.2.0 shows deprecation warning (version 2.0.0 available but not yet installed)
@@ -340,4 +364,4 @@ Planning three UI enhancements for the main screen:
 - Foreign key constraints enabled via PRAGMA
 
 ---
-*Last Updated: December 10, 2024*
+*Last Updated: December 21, 2025*

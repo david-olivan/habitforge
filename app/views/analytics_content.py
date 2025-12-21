@@ -449,7 +449,14 @@ class AnalyticsContent(MDBoxLayout):
         """
         Refresh analytics when user switches to this tab.
 
+        Only performs refresh if cache has been invalidated (dirty flag set).
         Call this from main_container.py when Analytics tab is selected.
         """
-        Logger.info("AnalyticsContent: Refreshing on tab enter")
-        self.load_habits()
+        from logic.heatmap_data import HeatmapDataCache
+
+        if HeatmapDataCache.is_dirty():
+            Logger.info("AnalyticsContent: Cache is dirty, refreshing heatmaps")
+            self._reload_all_heatmaps()
+            HeatmapDataCache.clear_dirty_flag()
+        else:
+            Logger.info("AnalyticsContent: Cache is clean, skipping refresh")

@@ -11,6 +11,8 @@ from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.metrics import dp
 from kivy.core.window import Window
+from kivy.logger import Logger
+from kivy.clock import Clock
 
 from views.main_screen import MainScreen
 from views.analytics_content import AnalyticsContent
@@ -85,7 +87,8 @@ class MainContainerScreen(MDScreen):
         analytics_tab = MDBottomNavigationItem(
             name="analytics", text="Analytics", icon="chart-bar"
         )
-        analytics_tab.add_widget(AnalyticsContent())
+        self.analytics_content = AnalyticsContent()
+        analytics_tab.add_widget(self.analytics_content)
 
         # Account Tab (placeholder)
         account_tab = MDBottomNavigationItem(
@@ -96,6 +99,10 @@ class MainContainerScreen(MDScreen):
         self.bottom_nav.add_widget(habits_tab)
         self.bottom_nav.add_widget(analytics_tab)
         self.bottom_nav.add_widget(account_tab)
+
+        # Bind to tab switch event to refresh analytics when user navigates to it
+        self.bottom_nav.bind(on_switch_tabs=self._on_tab_switch)
+        Logger.info(f"MainContainer: Bound to on_switch_tabs event. Initial tab: {self.bottom_nav.current}")
 
         # Add bottom navigation to layout
         layout.add_widget(self.bottom_nav)
@@ -150,3 +157,21 @@ class MainContainerScreen(MDScreen):
                 return True
 
         return super().on_touch_up(touch)
+
+    def _on_tab_switch(self, instance_bottom_nav, instance_bottom_nav_item, name_tab):
+        """
+        Handle tab switch events to refresh data when needed.
+
+        Called by MDBottomNavigation.on_switch_tabs event.
+
+        Args:
+            instance_bottom_nav: The MDBottomNavigation instance
+            instance_bottom_nav_item: The MDBottomNavigationItem being switched to
+            name_tab: The name of the newly selected tab
+        """
+        Logger.info(f"MainContainer: Tab switched to '{name_tab}'")
+
+        if name_tab == "analytics":
+            # Refresh analytics data when user switches to Analytics tab
+            # Only actually refreshes if cache has been invalidated
+            self.analytics_content.refresh_on_tab_enter()
