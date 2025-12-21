@@ -12,6 +12,7 @@ from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDFloatingActionButton, MDIconButton
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.widget import Widget
 from kivy.metrics import dp
 from kivy.clock import Clock
 from datetime import date
@@ -20,7 +21,7 @@ from models.database import get_all_habits
 from logic.completion_manager import log_completion, get_habit_progress
 from logic.streak_calculator import calculate_streak
 from components.habit_card import HabitCard
-from components.date_strip import DateNavigationStrip
+from components.date_strip import DateNavigationStrip, STRIP_HEIGHT
 from config.constants import GOAL_TYPE_LABELS, BRAND_PRIMARY_RGB
 from kivy.logger import Logger
 
@@ -84,9 +85,25 @@ class MainScreen(MDScreen):
         )  # Make scrollable
 
         # Date navigation strip (5-day selector)
+        # Center it by setting size_hint_x=None and wrapping in a centered container
         self.date_strip = DateNavigationStrip(selected_date=self.selected_date)
         self.date_strip.on_date_changed = self._on_date_selected
-        self.content_layout.add_widget(self.date_strip)
+        self.date_strip.size_hint_x = None  # Don't expand to fill width
+
+        # Calculate strip width: 5 buttons + 4 gaps + horizontal padding
+        strip_width = (5 * 58) + (4 * 6) + (2 * 12)  # buttons + spacing + padding
+        self.date_strip.width = dp(strip_width)
+
+        # Wrap in horizontal container with spacers to center the strip
+        strip_container = MDBoxLayout(
+            orientation="horizontal",
+            size_hint_y=None,
+            height=dp(STRIP_HEIGHT)
+        )
+        strip_container.add_widget(Widget())  # Left spacer
+        strip_container.add_widget(self.date_strip)
+        strip_container.add_widget(Widget())  # Right spacer
+        self.content_layout.add_widget(strip_container)
 
         # Placeholder for habit sections (will be populated in on_enter)
         self.sections_container = MDBoxLayout(

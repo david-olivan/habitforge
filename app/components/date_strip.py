@@ -23,7 +23,7 @@ from config.constants import BRAND_PRIMARY_RGB, hex_to_rgba
 DAY_BUTTON_WIDTH = 58
 DAY_BUTTON_HEIGHT = 56
 DAY_BUTTON_RADIUS = 8
-DAY_BUTTON_ELEVATION = 1
+DAY_BUTTON_ELEVATION = 0.3
 
 # Strip container
 STRIP_SPACING = 6
@@ -34,8 +34,10 @@ STRIP_HEIGHT = 72
 # Colors
 COLOR_SELECTED_BG = BRAND_PRIMARY_RGB  # Orange for selected day
 COLOR_UNSELECTED_BG = (1, 1, 1, 1)  # White for other days
+COLOR_FUTURE_BG = (0.95, 0.95, 0.95, 1)  # Light grey for future days
 COLOR_SELECTED_TEXT = (1, 1, 1, 1)  # White text for selected
 COLOR_UNSELECTED_TEXT = (0.3, 0.3, 0.3, 1)  # Dark grey for unselected
+COLOR_FUTURE_TEXT = (0.6, 0.6, 0.6, 1)  # Lighter grey text for future
 COLOR_MONTH_TEXT = (0.5, 0.5, 0.5, 1)  # Medium grey for month abbreviation
 
 # Typography
@@ -58,13 +60,15 @@ class DayButton(MDCard):
 
     day_date = ObjectProperty(None)  # date object for this button
     is_selected = ObjectProperty(False)  # Whether this day is selected
+    is_future = ObjectProperty(False)  # Whether this day is in the future
     on_click = ObjectProperty(None)  # Callback when button is tapped
 
-    def __init__(self, day_date: date, is_selected: bool = False, **kwargs):
+    def __init__(self, day_date: date, is_selected: bool = False, is_future: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         self.day_date = day_date
         self.is_selected = is_selected
+        self.is_future = is_future
 
         # Card styling
         self.orientation = "vertical"
@@ -94,7 +98,13 @@ class DayButton(MDCard):
         )
 
         # Day number label (large)
-        text_color = COLOR_SELECTED_TEXT if self.is_selected else COLOR_UNSELECTED_TEXT
+        if self.is_selected:
+            text_color = COLOR_SELECTED_TEXT
+        elif self.is_future:
+            text_color = COLOR_FUTURE_TEXT
+        else:
+            text_color = COLOR_UNSELECTED_TEXT
+
         self.day_number_label = MDLabel(
             text=str(self.day_date.day),
             halign="center",
@@ -108,7 +118,12 @@ class DayButton(MDCard):
         container.add_widget(self.day_number_label)
 
         # Month abbreviation label (small)
-        month_color = COLOR_SELECTED_TEXT if self.is_selected else COLOR_MONTH_TEXT
+        if self.is_selected:
+            month_color = COLOR_SELECTED_TEXT
+        elif self.is_future:
+            month_color = COLOR_FUTURE_TEXT
+        else:
+            month_color = COLOR_MONTH_TEXT
         self.month_label = MDLabel(
             text=self.day_date.strftime("%b"),  # 3-letter month (Dec, Jan, etc.)
             halign="center",
@@ -126,8 +141,10 @@ class DayButton(MDCard):
         """Update card background color based on selection state."""
         if self.is_selected:
             self.md_bg_color = COLOR_SELECTED_BG
+        elif self.is_future:
+            self.md_bg_color = COLOR_FUTURE_BG  # Light grey for future
         else:
-            self.md_bg_color = COLOR_UNSELECTED_BG
+            self.md_bg_color = COLOR_UNSELECTED_BG  # White for past/today
 
     def _on_tap(self, instance):
         """Handle button tap."""
@@ -140,8 +157,15 @@ class DayButton(MDCard):
         self._update_background_color()
 
         # Update text colors
-        text_color = COLOR_SELECTED_TEXT if selected else COLOR_UNSELECTED_TEXT
-        month_color = COLOR_SELECTED_TEXT if selected else COLOR_MONTH_TEXT
+        if selected:
+            text_color = COLOR_SELECTED_TEXT
+            month_color = COLOR_SELECTED_TEXT
+        elif self.is_future:
+            text_color = COLOR_FUTURE_TEXT
+            month_color = COLOR_FUTURE_TEXT
+        else:
+            text_color = COLOR_UNSELECTED_TEXT
+            month_color = COLOR_MONTH_TEXT
 
         if hasattr(self, 'day_number_label'):
             self.day_number_label.text_color = text_color
@@ -166,7 +190,8 @@ class DateNavigationStrip(MDBoxLayout):
         on_date_changed: Callback when user selects a different date
     """
 
-    selected_date = ObjectProperty(date.today())  # Current selected date
+    today_date = ObjectProperty(date.today())  # Today's actual date (always center)
+    selected_date = ObjectProperty(date.today())  # Current selected date (can differ from today)
     on_date_changed = ObjectProperty(None)  # Callback(new_date)
 
     def __init__(self, **kwargs):
@@ -186,26 +211,28 @@ class DateNavigationStrip(MDBoxLayout):
         self.refresh_strip()
 
     def refresh_strip(self):
-        """Rebuild the 5-day strip centered on selected_date."""
+        """Rebuild the 5-day strip centered on today_date."""
         # Clear existing buttons
         self.clear_widgets()
         self.day_buttons = []
 
-        # Calculate 5-day range: selected_date - 2, -1, 0, +1, +2
+        # Calculate 5-day range: always center on TODAY, not selected date
         dates = [
-            self.selected_date - timedelta(days=2),
-            self.selected_date - timedelta(days=1),
-            self.selected_date,
-            self.selected_date + timedelta(days=1),
-            self.selected_date + timedelta(days=2)
+            self.today_date - timedelta(days=2),
+            self.today_date - timedelta(days=1),
+            self.today_date,
+            self.today_date + timedelta(days=1),
+            self.today_date + timedelta(days=2)
         ]
 
         # Create button for each date
         for day_date in dates:
             is_selected = (day_date == self.selected_date)
+            is_future = (day_date > self.today_date)
             button = DayButton(
                 day_date=day_date,
                 is_selected=is_selected,
+                is_future=is_future
             )
             button.on_click = self._on_day_selected
 
@@ -219,11 +246,15 @@ class DateNavigationStrip(MDBoxLayout):
             return
 
         # Update selected date
-        old_date = self.selected_date
+        old_selected = self.selected_date
         self.selected_date = new_date
 
-        # Refresh the strip to recenter on new date
-        self.refresh_strip()
+        # Update button states WITHOUT rebuilding the strip
+        for button in self.day_buttons:
+            if button.day_date == old_selected:
+                button.set_selected(False)  # Deselect old
+            if button.day_date == new_date:
+                button.set_selected(True)   # Select new
 
         # Fire callback to parent
         if self.on_date_changed:
