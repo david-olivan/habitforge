@@ -1,4 +1,4 @@
-name: Release Build
+name: Create Release Draft
 
 # Trigger only when tags matching v*.*.* are pushed
 on:
@@ -9,14 +9,14 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    
+
     steps:
       # Step 1: Checkout code with full history (needed for changelog)
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history for changelog generation
-      
+
       # Step 2: Generate changelog from conventional commits
       - name: Generate Changelog
         id: changelog
@@ -26,55 +26,8 @@ jobs:
           tag: ${{ github.ref_name }}
           writeToFile: false
 
-      # Step 3: Set up Docker Buildx (for better caching)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # Step 4: Setup debug keystore from secrets
-      - name: Setup Debug Keystore
-        run: |
-          mkdir -p .android
-          echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 -d > .android/debug.keystore
-          echo "✓ Debug keystore restored from secrets"
-
-      # Step 5: Cache Buildozer dependencies
-      - name: Cache Buildozer
-        uses: actions/cache@v4
-        with:
-          path: .buildozer
-          key: buildozer-${{ hashFiles('buildozer.spec') }}
-          restore-keys: |
-            buildozer-
-
-      # Step 6: Build Android APK with Docker and custom keystore
-      - name: Build Android APK
-        run: |
-          echo "Building APK with Docker and custom debug keystore..."
-          docker run --rm \
-            -v "$(pwd):/home/user/hostcwd" \
-            -v "$HOME/.buildozer:/home/user/.buildozer" \
-            -v "$(pwd)/.android:/home/user/.android" \
-            -e P4A_RELEASE_KEYSTORE="/home/user/.android/debug.keystore" \
-            -e P4A_RELEASE_KEYSTORE_PASSWD="android" \
-            -e P4A_RELEASE_KEYALIAS="androiddebugkey" \
-            -e P4A_RELEASE_KEYALIAS_PASSWD="android" \
-            kivy/buildozer \
-            --verbose android debug
-
-          echo "Build complete! Fixing permissions..."
-          sudo chown -R $(id -u):$(id -g) bin/ .buildozer/ .android/
-
-          echo "Locating APK..."
-          APK_PATH=$(find bin/ -name '*.apk' | head -n 1)
-          echo "APK found: $APK_PATH"
-          echo "APK_PATH=$APK_PATH" >> $GITHUB_ENV
-
-          # Get APK file size for summary
-          APK_SIZE=$(du -h "$APK_PATH" | cut -f1)
-          echo "APK_SIZE=$APK_SIZE" >> $GITHUB_ENV
-
-      # Step 6: Create GitHub Release (draft for review)
-      - name: Create Release
+      # Step 3: Create GitHub Release (draft for manual APK upload)
+      - name: Create Release Draft
         uses: softprops/action-gh-release@v1
         with:
           body: |
@@ -94,20 +47,14 @@ jobs:
             4. Follow the installation prompts
           draft: true
           prerelease: ${{ startsWith(github.ref, 'refs/tags/v0.') }}
-          files: bin/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
-      # Step 7: Build summary
+      # Step 4: Build summary
       - name: Build Summary
-        if: always()
         run: |
-          echo "## 🎉 Release Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎉 Release Draft Created" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Tag:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-          if [ -n "$APK_PATH" ]; then
-            echo "**APK:** $APK_PATH" >> $GITHUB_STEP_SUMMARY
-            echo "**Size:** $APK_SIZE" >> $GITHUB_STEP_SUMMARY
-          fi
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Draft release created - review and publish when ready!" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Draft release created - manually upload APK and publish when ready!" >> $GITHUB_STEP_SUMMARY

@@ -1,5 +1,6 @@
 # HabitForge - Personal Android App
 
+[![Release](https://github.com/david-olivan/habitforge/actions/workflows/release.yml/badge.svg)](https://github.com/david-olivan/habitforge/actions/workflows/release.yml)
 [![Android Build Compliance](https://github.com/david-olivan/habitforge/actions/workflows/android-compliance.yml/badge.svg)](https://github.com/david-olivan/habitforge/actions/workflows/android-compliance.yml)
 
 A privacy-focused, offline-first habit tracking application for Android, built with Python and Kivy.
