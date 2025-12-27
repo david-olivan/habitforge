@@ -20,8 +20,15 @@
     "edit_habit": "Edit Habit",
     "save": "Save",
     "cancel": "Cancel",
+    "name_label": "Name",
     "habit_name": "Habit Name",
     "habit_name_helper": "Enter a unique name (1-50 characters)",
+    "habit_color": "Color",
+    "frequency_of": "Frequency of",
+    "per": "per",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
     "goal_type": "Goal Type",
     "goal_count": "Goal Count",
     "daily": "Daily",
@@ -30,7 +37,9 @@
     "daily_section": "Daily Goals",
     "weekly_section": "Weekly Goals",
     "monthly_section": "Monthly Goals",
-    "no_habits": "No habits yet. Tap + to create one!"
+    "no_habits": "No habits yet. Tap + to create one!",
+    "back": "Back",
+    "add": "Add"
   },
   "analytics": {
     "title": "Analytics",

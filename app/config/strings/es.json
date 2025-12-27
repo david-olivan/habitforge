@@ -20,8 +20,15 @@
     "edit_habit": "Editar Hábito",
     "save": "Guardar",
     "cancel": "Cancelar",
+    "name_label": "Nombre",
     "habit_name": "Nombre del Hábito",
     "habit_name_helper": "Ingrese un nombre único (1-50 caracteres)",
+    "habit_color": "Color",
+    "frequency_of": "Frecuencia de",
+    "per": "por",
+    "day": "Día",
+    "week": "Semana",
+    "month": "Mes",
     "goal_type": "Tipo de Meta",
     "goal_count": "Cantidad de Meta",
     "daily": "Diario",
@@ -30,7 +37,9 @@
     "daily_section": "Metas Diarias",
     "weekly_section": "Metas Semanales",
     "monthly_section": "Metas Mensuales",
-    "no_habits": "¡No hay hábitos aún. Toca + para crear uno!"
+    "no_habits": "¡No hay hábitos aún. Toca + para crear uno!",
+    "back": "Atrás",
+    "add": "Agregar"
   },
   "analytics": {
     "title": "Analíticas",
