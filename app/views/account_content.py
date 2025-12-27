@@ -13,13 +13,11 @@ from kivy.metrics import dp
 from kivy.logger import Logger
 
 from logic.localization import _, set_language, get_current_language
-from logic.data_manager import export_to_csv, import_from_csv, delete_all_data, get_data_counts
-from components.confirmation_dialog import TwoStepConfirmationDialog
+from logic.data_manager import export_to_csv
 from config.constants import (
     EXPORT_BUTTON_COLOR,
     IMPORT_BUTTON_COLOR,
     DELETE_BUTTON_COLOR,
-    LANGUAGE_NAMES,
 )
 
 
@@ -260,90 +258,35 @@ class AccountContent(MDBoxLayout):
             self._show_snackbar(message, is_error=True)
 
     def _on_import_pressed(self, *args):
-        """Handle import button press with two-step confirmation."""
-        Logger.info("AccountContent: Import button pressed")
-
-        # Get data counts for warning message
-        counts = get_data_counts()
-        warning_message = _("dialogs.import_warning", **counts)
-
-        # Show two-step confirmation dialog
-        dialog = TwoStepConfirmationDialog(
-            warning_message=warning_message,
-            on_confirm=self._do_import,
-            get_strings=lambda key: _(f"dialogs.{key}"),
-        )
-        dialog.open()
-
-    def _do_import(self):
-        """Perform the actual import after confirmation."""
-        Logger.info("AccountContent: Starting import (user confirmed)")
-
-        try:
-            # Open file picker
-            from plyer import filechooser
-
-            filechooser.open_file(
-                on_selection=self._on_import_file_selected,
-                filters=[("*.zip", "ZIP files")],
-            )
-        except Exception as e:
-            Logger.error(f"AccountContent: Error opening file picker: {e}")
-            self._show_snackbar(_("messages.import_error", error=str(e)), is_error=True)
-
-    def _on_import_file_selected(self, selection):
-        """
-        Handle file selection from file picker.
-
-        Args:
-            selection: List of selected file paths
-        """
-        if not selection:
-            Logger.info("AccountContent: Import cancelled (no file selected)")
-            return
-
-        file_path = selection[0]
-        Logger.info(f"AccountContent: Importing from {file_path}")
-
-        success, error = import_from_csv(file_path)
-        if success:
-            self._show_snackbar(_("messages.import_success"))
-            # Reload language from database (in case it changed)
-            from logic.localization import load_language_from_database
-            load_language_from_database()
-            self.refresh_ui()
-        else:
-            self._show_snackbar(_("messages.import_error", error=error), is_error=True)
+        """Navigate to import data screen."""
+        Logger.info("AccountContent: Import button pressed - navigating to import screen")
+        self._navigate_to_screen("import_data")
 
     def _on_delete_pressed(self, *args):
-        """Handle delete button press with two-step confirmation."""
-        Logger.info("AccountContent: Delete button pressed")
+        """Navigate to delete data screen."""
+        Logger.info("AccountContent: Delete button pressed - navigating to delete screen")
+        self._navigate_to_screen("delete_data")
 
-        # Get data counts for warning message
-        counts = get_data_counts()
-        warning_message = _("dialogs.delete_warning", **counts)
+    def _navigate_to_screen(self, screen_name: str):
+        """
+        Navigate to a specific screen.
 
-        # Show two-step confirmation dialog
-        dialog = TwoStepConfirmationDialog(
-            warning_message=warning_message,
-            on_confirm=self._do_delete,
-            get_strings=lambda key: _(f"dialogs.{key}"),
-        )
-        dialog.open()
+        Args:
+            screen_name: Name of the screen to navigate to
+        """
+        # Navigate up through widget hierarchy to find the MainContainerScreen
+        # MainContainerScreen is an MDScreen, so it has .manager pointing to the root MDScreenManager
+        widget = self.parent
+        while widget:
+            # Look for MainContainerScreen (it's an MDScreen with name="main_container")
+            if hasattr(widget, 'name') and widget.name == "main_container":
+                if hasattr(widget, 'manager') and widget.manager:
+                    Logger.info(f"AccountContent: Found MainContainerScreen, navigating to {screen_name}")
+                    widget.manager.current = screen_name
+                    return
+            widget = widget.parent
 
-    def _do_delete(self):
-        """Perform the actual delete after confirmation."""
-        Logger.info("AccountContent: Deleting all data (user confirmed)")
-
-        success, error = delete_all_data()
-        if success:
-            self._show_snackbar(_("messages.delete_success"))
-            # Language was reset to English, reload it
-            from logic.localization import load_language_from_database
-            load_language_from_database()
-            self.refresh_ui()
-        else:
-            self._show_snackbar(_("messages.delete_error", error=error), is_error=True)
+        Logger.error(f"AccountContent: Could not find screen manager to navigate to {screen_name}")
 
     def _show_snackbar(self, message: str, is_error: bool = False):
         """

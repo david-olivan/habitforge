@@ -12,6 +12,8 @@ from kivy.logger import Logger
 from models.database import init_database
 from views.habit_form import HabitFormScreen
 from views.main_container import MainContainerScreen
+from views.import_data_screen import ImportDataScreen
+from views.delete_data_screen import DeleteDataScreen
 
 
 class HabitForgeApp(MDApp):
@@ -55,8 +57,24 @@ class HabitForgeApp(MDApp):
         screen_manager = MDScreenManager()
 
         # Add screens
-        screen_manager.add_widget(MainContainerScreen())
-        screen_manager.add_widget(HabitFormScreen())
+        main_container = MainContainerScreen()
+        Logger.info(f"HabitForge: Adding MainContainerScreen with name='{main_container.name}'")
+        screen_manager.add_widget(main_container)
+
+        habit_form = HabitFormScreen()
+        Logger.info(f"HabitForge: Adding HabitFormScreen with name='{habit_form.name}'")
+        screen_manager.add_widget(habit_form)
+
+        import_screen = ImportDataScreen()
+        Logger.info(f"HabitForge: Adding ImportDataScreen with name='{import_screen.name}'")
+        screen_manager.add_widget(import_screen)
+
+        delete_screen = DeleteDataScreen()
+        Logger.info(f"HabitForge: Adding DeleteDataScreen with name='{delete_screen.name}'")
+        screen_manager.add_widget(delete_screen)
+
+        # Log all registered screen names
+        Logger.info(f"HabitForge: All registered screens: {screen_manager.screen_names}")
 
         # Set default screen to main_container
         screen_manager.current = "main_container"

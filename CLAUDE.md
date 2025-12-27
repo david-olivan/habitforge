@@ -235,6 +235,59 @@ adb logcat > logs.txt  # Windows (then search for 'python' or 'ModuleNotFoundErr
 - Use `typing.Optional[T]` instead of `T | None` for type hints
 - Test locally with Python 3.11 before building APK
 
+## Navigation Patterns (December 27, 2025)
+
+### Critical: Navigating from Embedded Widgets to Root Screens
+
+**Problem**: When widgets are embedded inside bottom navigation tabs, they need to navigate to screens in the root `MDScreenManager`. The widget hierarchy can be confusing:
+
+```
+MDScreenManager (root) ← This is what we need to access
+├── MainContainerScreen (MDScreen, name="main_container")
+│   └── MDBottomNavigation ← Also has .manager but WRONG ONE!
+│       └── MDBottomNavigationItem
+│           └── AccountContent ← Starting point (embedded widget)
+├── ImportDataScreen (name="import_data")
+└── DeleteDataScreen (name="delete_data")
+```
+
+**Wrong Approach** (finds wrong manager):
+```python
+def _navigate_to_screen(self, screen_name: str):
+    widget = self.parent
+    while widget:
+        if hasattr(widget, 'manager') and widget.manager:
+            widget.manager.current = screen_name  # ❌ Gets MDBottomNavigation's manager!
+            return
+        widget = widget.parent
+```
+
+**Correct Approach** (finds root screen manager):
+```python
+def _navigate_to_screen(self, screen_name: str):
+    """Navigate to a screen in the root MDScreenManager."""
+    # Walk up to find the parent MDScreen (MainContainerScreen)
+    # Its .manager attribute points to the root MDScreenManager
+    widget = self.parent
+    while widget:
+        # Look for MainContainerScreen specifically by name
+        if hasattr(widget, 'name') and widget.name == "main_container":
+            if hasattr(widget, 'manager') and widget.manager:
+                widget.manager.current = screen_name  # ✅ Correct!
+                return
+        widget = widget.parent
+```
+
+**Why This Matters**:
+- `MDBottomNavigation` has a `.manager` attribute but it manages bottom nav items, not root screens
+- Walking up the hierarchy and grabbing the first `.manager` gets the wrong one
+- Must specifically find the parent `MDScreen` (which has `name` attribute) to get root manager
+- This pattern applies to any widget embedded in bottom navigation tabs
+
+**Example Files**:
+- [app/views/account_content.py](app/views/account_content.py) - `_navigate_to_screen()` method (lines 272-289)
+- Uses this pattern to navigate from Account tab to ImportDataScreen/DeleteDataScreen
+
 ## Critical Instructions
 
 ### ⚠️ NEVER COMMIT UNLESS EXPLICITLY DIRECTED
@@ -322,6 +375,7 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 10. **Relative Imports**: All imports within `app/` use relative paths (e.g., `from models.database` NOT `from app.models.database`) since the app is run from the `app/` directory
 11. **Pydantic Field Naming**: Avoid naming model fields the same as their type (e.g., use `date: DateType` not `date: date`) to prevent schema generation issues
 12. **FloatLayout for FAB**: Use FloatLayout to allow FAB to truly float above scrollable content instead of taking up layout space in MDBoxLayout
+13. **Screen Manager Navigation from Embedded Widgets**: When navigating from widgets embedded in bottom navigation tabs (like AccountContent inside MainContainerScreen), must find the root MDScreenManager by specifically looking for the parent MDScreen (e.g., `widget.name == "main_container"`), NOT just any widget with a `.manager` attribute (MDBottomNavigation also has one but it's the wrong manager)
 
 ## Current Task
 **READY FOR NEXT FEATURE** ✅

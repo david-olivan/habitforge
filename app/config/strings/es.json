@@ -67,6 +67,33 @@
     "success": "Éxito",
     "error": "Error"
   },
+  "screens": {
+    "import_data": {
+      "title": "Importar Datos",
+      "warning_title": "Advertencia",
+      "warning_message": "Esto reemplazará todos los datos actuales",
+      "current_data": "{habit_count} hábitos, {completion_count} completados",
+      "subtitle": "Elige un archivo de respaldo para restaurar",
+      "choose_file": "Elegir Archivo de Respaldo (.zip)",
+      "file_selected": "Seleccionado: {filename}",
+      "no_file": "Ningún archivo seleccionado",
+      "import_button": "Importar Datos",
+      "importing": "Importando...",
+      "cancel": "Cancelar"
+    },
+    "delete_data": {
+      "title": "Eliminar Todos los Datos",
+      "warning_title": "Acción Permanente",
+      "warning_message": "Esto eliminará permanentemente todos los datos",
+      "current_data": "Perderás: {habit_count} hábitos, {completion_count} completados",
+      "subtitle": "Esta acción no se puede deshacer",
+      "confirmation_label": "Escribe DELETE para confirmar",
+      "confirmation_placeholder": "Escribe aquí...",
+      "delete_button": "Eliminar Todo",
+      "deleting": "Eliminando...",
+      "cancel": "Cancelar"
+    }
+  },
   "messages": {
     "export_success": "Respaldo guardado en Descargas/{filename}",
     "export_error": "Exportación fallida: {error}",
@@ -76,6 +103,9 @@
     "delete_error": "Eliminación fallida: {error}",
     "habit_saved": "¡Hábito guardado exitosamente!",
     "habit_deleted": "Hábito eliminado exitosamente",
-    "language_changed": "Idioma cambiado a Español"
+    "language_changed": "Idioma cambiado a Español",
+    "invalid_backup": "Archivo de respaldo inválido: {error}",
+    "file_picker_error": "No se pudo abrir el selector de archivos",
+    "permissions_required": "Se requiere permiso de almacenamiento"
   }
 }

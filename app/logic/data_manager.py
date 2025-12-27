@@ -72,6 +72,38 @@ def get_data_counts() -> Dict[str, int]:
         return {"habit_count": 0, "completion_count": 0}
 
 
+def validate_backup_zip(zip_path: str) -> Tuple[bool, str]:
+    """
+    Validate that a backup ZIP file has the correct structure.
+
+    Args:
+        zip_path: Path to ZIP file
+
+    Returns:
+        Tuple[bool, str]: (is_valid, error_message)
+    """
+    try:
+        if not os.path.exists(zip_path):
+            return False, "File not found"
+
+        with zipfile.ZipFile(zip_path, 'r') as zipf:
+            files = zipf.namelist()
+
+            # Check required files exist
+            required = ['habits.csv', 'completions.csv', 'settings.csv']
+            missing = [f for f in required if f not in files]
+
+            if missing:
+                return False, f"Missing required files: {', '.join(missing)}"
+
+            return True, ""
+
+    except zipfile.BadZipFile:
+        return False, "Not a valid ZIP file"
+    except Exception as e:
+        return False, str(e)
+
+
 def export_to_csv() -> Tuple[bool, str]:
     """
     Export all data (habits, completions, settings) to a ZIP file containing CSVs.
@@ -174,8 +206,11 @@ def import_from_csv(zip_path: str) -> Tuple[bool, str]:
     try:
         from models.database import get_connection
 
-        if not os.path.exists(zip_path):
-            return False, f"File not found: {zip_path}"
+        # CRITICAL: Validate ZIP structure BEFORE wiping data
+        is_valid, error = validate_backup_zip(zip_path)
+        if not is_valid:
+            Logger.error(f"DataManager: Invalid backup file: {error}")
+            return False, f"Invalid backup: {error}"
 
         Logger.info(f"DataManager: Starting import from {zip_path}")
 

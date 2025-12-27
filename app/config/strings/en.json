@@ -67,6 +67,33 @@
     "success": "Success",
     "error": "Error"
   },
+  "screens": {
+    "import_data": {
+      "title": "Import Data",
+      "warning_title": "Warning",
+      "warning_message": "This will replace all current data",
+      "current_data": "{habit_count} habits, {completion_count} completions",
+      "subtitle": "Choose a backup file to restore",
+      "choose_file": "Choose Backup File (.zip)",
+      "file_selected": "Selected: {filename}",
+      "no_file": "No file selected",
+      "import_button": "Import Data",
+      "importing": "Importing...",
+      "cancel": "Cancel"
+    },
+    "delete_data": {
+      "title": "Delete All Data",
+      "warning_title": "Permanent Action",
+      "warning_message": "This will permanently delete all data",
+      "current_data": "You will lose: {habit_count} habits, {completion_count} completions",
+      "subtitle": "This action cannot be undone",
+      "confirmation_label": "Type DELETE to confirm",
+      "confirmation_placeholder": "Type here...",
+      "delete_button": "Delete Everything",
+      "deleting": "Deleting...",
+      "cancel": "Cancel"
+    }
+  },
   "messages": {
     "export_success": "Backup saved to Downloads/{filename}",
     "export_error": "Export failed: {error}",
@@ -76,6 +103,9 @@
     "delete_error": "Delete failed: {error}",
     "habit_saved": "Habit saved successfully!",
     "habit_deleted": "Habit deleted successfully",
-    "language_changed": "Language changed to English"
+    "language_changed": "Language changed to English",
+    "invalid_backup": "Invalid backup file: {error}",
+    "file_picker_error": "Could not open file picker",
+    "permissions_required": "Storage permission required"
   }
 }
