@@ -201,14 +201,51 @@ This file tracks technical debt, deferred tasks, and future improvements for Hab
 - [ ] Dark theme support
 - [ ] Habit templates
 - [ ] Reminders/notifications
-- [ ] Backup/restore to file
+- [x] Backup/restore to file (Implemented: Export/Import CSV backups)
 - [ ] Habit notes/journal entries
 - [ ] Habit categories/tags
 - [ ] Custom week start day
 - [ ] Achievement badges
-- [ ] Localization (i18n)
+- [x] Localization (i18n) - **Basic implementation complete, see below for improvement plan**
 
 ---
 
-**Last Updated:** December 8, 2025
-**Next Review:** After Phase 1 MVP completion
+## Localization Technical Debt
+
+### Current Implementation (December 21, 2025)
+- ✅ **Status**: Basic JSON-based translation system implemented
+- ✅ **Languages**: English and Spanish
+- ✅ **Features**:
+  - Simple JSON translation files (`app/config/strings/en.json`, `es.json`)
+  - LocalizationManager singleton for loading translations
+  - Shorthand `_()` function for getting translated strings
+  - String formatting support (e.g., `_("key", count=5)`)
+  - Language preference persists across app restarts in database
+
+### Future Migration Plan
+- **Target**: Industry-standard `gettext` with .po/.mo files
+- **Reason**: Better tooling, pluralization rules, context-aware translations, translator-friendly
+- **Priority**: Medium (after Phase 2 completion)
+- **Tools**: babel, polib, or standard gettext utilities
+- **Benefits**:
+  - Professional translation workflow
+  - Better IDE/editor support for translators
+  - Pluralization (e.g., "1 habit" vs "2 habits")
+  - Context comments for translators
+  - Industry-standard format (.po files)
+
+### Translation Coverage
+- ✅ Account screen (settings, data management)
+- ✅ Bottom navigation tabs
+- ✅ App toolbar title
+- ⏸️ Main screen (habits list, section headers) - Partially implemented
+- ⏸️ Habit form (labels, buttons, validation messages) - Not yet implemented
+- ⏸️ Analytics screen (view switcher, labels) - Not yet implemented
+- ⏸️ Dialogs and error messages - Partially implemented
+
+**Note**: Core strings are translated, but full coverage of all UI elements needs completion.
+
+---
+
+**Last Updated:** December 21, 2025
+**Next Review:** After Phase 2 completion

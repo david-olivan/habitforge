@@ -43,6 +43,14 @@ class HabitForgeApp(MDApp):
         except Exception as e:
             Logger.error(f"HabitForge: Failed to initialize database: {e}")
 
+        # Load language preference from database
+        try:
+            from logic.localization import load_language_from_database
+            load_language_from_database()
+            Logger.info("HabitForge: Language preference loaded successfully")
+        except Exception as e:
+            Logger.error(f"HabitForge: Failed to load language preference: {e}")
+
         # Create screen manager
         screen_manager = MDScreenManager()
 

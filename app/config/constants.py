@@ -132,3 +132,30 @@ DATABASE_VERSION = 1
 APP_NAME = "HabitForge"
 APP_VERSION = "0.1.4"
 APP_AUTHOR = "Davs"
+
+
+# ============================================
+# LOCALIZATION
+# ============================================
+
+# Supported language codes
+SUPPORTED_LANGUAGES = ["en", "es"]
+
+# Default language (English)
+DEFAULT_LANGUAGE = "en"
+
+# Language display names
+LANGUAGE_NAMES = {
+    "en": "English",
+    "es": "Español"
+}
+
+
+# ============================================
+# DATA MANAGEMENT
+# ============================================
+
+# Button colors for data management (RGBA format for Kivy)
+EXPORT_BUTTON_COLOR = (0.7, 1.0, 0.7, 1)  # Very light green
+IMPORT_BUTTON_COLOR = (1.0, 0.7, 0.7, 1)  # Light red
+DELETE_BUTTON_COLOR = (0.8, 0.2, 0.2, 1)  # Dark red

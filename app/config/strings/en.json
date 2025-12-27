@@ -1,0 +1,81 @@
+{
+  "app_name": "HabitForge",
+  "tabs": {
+    "habits": "Habits",
+    "analytics": "Analytics",
+    "account": "Account"
+  },
+  "account": {
+    "title": "Account Settings",
+    "localization_section": "Language",
+    "data_section": "Data Management",
+    "export_button": "Export Data",
+    "import_button": "Import Data",
+    "delete_button": "Delete All Data",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "habits": {
+    "new_habit": "New Habit",
+    "edit_habit": "Edit Habit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "habit_name": "Habit Name",
+    "habit_name_helper": "Enter a unique name (1-50 characters)",
+    "goal_type": "Goal Type",
+    "goal_count": "Goal Count",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "daily_section": "Daily Goals",
+    "weekly_section": "Weekly Goals",
+    "monthly_section": "Monthly Goals",
+    "no_habits": "No habits yet. Tap + to create one!"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year",
+    "today": "Today",
+    "previous": "Previous",
+    "next": "Next",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    }
+  },
+  "dialogs": {
+    "import_warning_template": "This will delete {habit_count} habits and {completion_count} completions",
+    "delete_warning_template": "This will delete {habit_count} habits and {completion_count} completions",
+    "import_warning": "This will delete {habit_count} habits and {completion_count} completions",
+    "delete_warning": "This will delete {habit_count} habits and {completion_count} completions",
+    "i_understand": "I Understand",
+    "are_you_sure": "Are you sure?",
+    "yes": "Yes",
+    "no": "No",
+    "success": "Success",
+    "error": "Error"
+  },
+  "messages": {
+    "export_success": "Backup saved to Downloads/{filename}",
+    "export_error": "Export failed: {error}",
+    "import_success": "Data imported successfully",
+    "import_error": "Import failed: {error}",
+    "delete_success": "All data deleted",
+    "delete_error": "Delete failed: {error}",
+    "habit_saved": "Habit saved successfully!",
+    "habit_deleted": "Habit deleted successfully",
+    "language_changed": "Language changed to English"
+  }
+}

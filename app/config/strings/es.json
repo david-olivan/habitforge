@@ -1,0 +1,81 @@
+{
+  "app_name": "HabitForge",
+  "tabs": {
+    "habits": "Hábitos",
+    "analytics": "Analíticas",
+    "account": "Cuenta"
+  },
+  "account": {
+    "title": "Configuración de Cuenta",
+    "localization_section": "Idioma",
+    "data_section": "Gestión de Datos",
+    "export_button": "Exportar Datos",
+    "import_button": "Importar Datos",
+    "delete_button": "Eliminar Todos los Datos",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "habits": {
+    "new_habit": "Nuevo Hábito",
+    "edit_habit": "Editar Hábito",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "habit_name": "Nombre del Hábito",
+    "habit_name_helper": "Ingrese un nombre único (1-50 caracteres)",
+    "goal_type": "Tipo de Meta",
+    "goal_count": "Cantidad de Meta",
+    "daily": "Diario",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "daily_section": "Metas Diarias",
+    "weekly_section": "Metas Semanales",
+    "monthly_section": "Metas Mensuales",
+    "no_habits": "¡No hay hábitos aún. Toca + para crear uno!"
+  },
+  "analytics": {
+    "title": "Analíticas",
+    "week": "Semana",
+    "month": "Mes",
+    "year": "Año",
+    "today": "Hoy",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "months": {
+      "january": "Enero",
+      "february": "Febrero",
+      "march": "Marzo",
+      "april": "Abril",
+      "may": "Mayo",
+      "june": "Junio",
+      "july": "Julio",
+      "august": "Agosto",
+      "september": "Septiembre",
+      "october": "Octubre",
+      "november": "Noviembre",
+      "december": "Diciembre"
+    }
+  },
+  "dialogs": {
+    "import_warning_template": "Esto eliminará {habit_count} hábitos y {completion_count} completados",
+    "delete_warning_template": "Esto eliminará {habit_count} hábitos y {completion_count} completados",
+    "import_warning": "Esto eliminará {habit_count} hábitos y {completion_count} completados",
+    "delete_warning": "Esto eliminará {habit_count} hábitos y {completion_count} completados",
+    "i_understand": "Entiendo",
+    "are_you_sure": "¿Estás seguro?",
+    "yes": "Sí",
+    "no": "No",
+    "success": "Éxito",
+    "error": "Error"
+  },
+  "messages": {
+    "export_success": "Respaldo guardado en Descargas/{filename}",
+    "export_error": "Exportación fallida: {error}",
+    "import_success": "Datos importados exitosamente",
+    "import_error": "Importación fallida: {error}",
+    "delete_success": "Todos los datos eliminados",
+    "delete_error": "Eliminación fallida: {error}",
+    "habit_saved": "¡Hábito guardado exitosamente!",
+    "habit_deleted": "Hábito eliminado exitosamente",
+    "language_changed": "Idioma cambiado a Español"
+  }
+}

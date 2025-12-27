@@ -23,6 +23,7 @@ from logic.streak_calculator import calculate_streak
 from components.habit_card import HabitCard
 from components.date_strip import DateNavigationStrip, STRIP_HEIGHT
 from config.constants import GOAL_TYPE_LABELS, BRAND_PRIMARY_RGB
+from logic.localization import _
 from kivy.logger import Logger
 
 
@@ -236,15 +237,15 @@ class MainScreen(MDScreen):
 
         # Render Daily section
         if self.daily_habits:
-            self.render_section("Daily Goals", self.daily_habits)
+            self.render_section(_("habits.daily_section"), self.daily_habits)
 
         # Render Weekly section
         if self.weekly_habits:
-            self.render_section("Weekly Goals", self.weekly_habits)
+            self.render_section(_("habits.weekly_section"), self.weekly_habits)
 
         # Render Monthly section
         if self.monthly_habits:
-            self.render_section("Monthly Goals", self.monthly_habits)
+            self.render_section(_("habits.monthly_section"), self.monthly_habits)
 
         # Add bottom spacer to prevent FAB from covering last habit's buttons
         # FAB clearance: 56dp (FAB) + 16dp (margin) + 16dp (safe scroll) = 88dp
