@@ -3,7 +3,7 @@
 ## Project Context
 HabitForge is a privacy-focused, offline-first habit tracking application for Android built with Python and Kivy.
 
-## Current Project State (December 10, 2025)
+## Current Project State (December 28, 2025 - v0.2.0)
 
 ### Directory Structure
 ```
@@ -56,6 +56,7 @@ habitforge/
 ✅ **PRD Section 2.1.2 - Completion Tracking: COMPLETED**
 ✅ **PRD Section 2.1.3 - Habit List Display: COMPLETED**
 ✅ **PRD Section 2.1.4 - Data Persistence: COMPLETED**
+✅ **PRD Section 2.1.5 - Habit Editing and Archiving: COMPLETED**
 ✅ **PRD Section 2.2.1 - Streak Tracking: COMPLETED**
 ✅ **PRD Section 2.2.2 - Calendar Heatmap Visualization: COMPLETED**
 ✅ **PRD Section 2.2.4 - Collapsible Sections: COMPLETED**
@@ -144,6 +145,17 @@ habitforge/
 - ✅ State stored in memory (resets on app restart)
 - ✅ Smaller section headers (20% reduction: H6 → Subtitle1, 32dp → 26dp)
 - ✅ Bottom scroll padding (88dp) to prevent FAB from covering habit buttons
+
+**Habit Editing and Archiving (2.1.5):**
+- ✅ Tap habit card to navigate to edit form
+- ✅ Edit form loads existing habit data
+- ✅ Dynamic UI: "Edit Habit" header and "Save" button in edit mode
+- ✅ Archive button (grey, neutral) visible only in edit mode
+- ✅ Soft delete via `archive_habit()` (preserves completions data)
+- ✅ Archived habits hidden from main screen
+- ✅ No confirmation dialog (immediate action, reversible)
+- ✅ Success message and auto-navigation after archive
+- ✅ Touch handling prevents edit when tapping increment button
 
 **Testing Status:**
 - ⏸️ Not yet tested (implementation complete, awaiting testing)
@@ -383,6 +395,11 @@ Defined in [app/models/schemas.py](app/models/schemas.py):
 All planned Phase 2 features complete except Week Navigation!
 
 **Recently Completed:**
+- ✅ Habit Editing and Archiving (December 28, 2025)
+  - Tap-to-edit interaction on habit cards
+  - Archive button in edit form (soft delete)
+  - Dynamic form UI (Edit vs Create modes)
+  - Future: View/restore archived habits screen
 - ✅ Real-time Analytics Refresh (December 21, 2025)
   - Fixed heatmap not updating when completing habits
   - Implemented smart cache dirty flag mechanism
@@ -402,12 +419,9 @@ All planned Phase 2 features complete except Week Navigation!
 - ⏸️ Section 2.2.5: Progress Statistics (not started)
 
 ## Known Issues
-- KivyMD 1.2.0 shows deprecation warning (version 2.0.0 available but not yet installed)
-- No confirmation dialog for deletions
-- No unit tests yet
-- Implementation not yet tested (code complete, testing pending)
-- Empty state on main screen needs testing
-- Error handling with Snackbar/Toast not implemented (uses logging only)
+- No unit tests yet (code complete, testing pending)
+- No confirmation dialogs for archive action
+- KivyMD 1.2.0 deprecation warning (v2.0.0 available but not installed)
 
 ## Notes
 - This is MVP Phase 1 work
@@ -418,4 +432,4 @@ All planned Phase 2 features complete except Week Navigation!
 - Foreign key constraints enabled via PRAGMA
 
 ---
-*Last Updated: December 21, 2025*
+*Last Updated: December 28, 2025*

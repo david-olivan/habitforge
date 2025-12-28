@@ -75,6 +75,7 @@ class HabitCard(MDCard):
     on_increment = ObjectProperty(
         None
     )  # Callback function when increment button pressed
+    on_edit = ObjectProperty(None)  # Callback when card is tapped
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -333,6 +334,30 @@ class HabitCard(MDCard):
                 Logger.warning("HabitCard: No habit_id found in habit data")
         else:
             Logger.warning(f"HabitCard: on_increment={self.on_increment}, habit={self.habit}")
+
+    def on_touch_down(self, touch):
+        """Handle touch events on the card."""
+        from kivy.logger import Logger
+
+        # Check if touch is within card bounds
+        if not self.collide_point(*touch.pos):
+            return super().on_touch_down(touch)
+
+        # Check if touch is on the increment button - let button handle it
+        if self.increment_btn.collide_point(*touch.pos):
+            return super().on_touch_down(touch)
+
+        # Touch is on card but not button - trigger edit
+        Logger.info(f"HabitCard: Card tapped for habit {self.habit}")
+        if self.on_edit and self.habit:
+            habit_id = self.habit.get("id")
+            if habit_id:
+                Logger.info(f"HabitCard: Calling on_edit with habit_id={habit_id}")
+                self.on_edit(habit_id)
+            else:
+                Logger.warning("HabitCard: No habit_id in habit data")
+
+        return True  # Consume the event
 
     def update_data(self, habit_dict, progress_dict):
         """

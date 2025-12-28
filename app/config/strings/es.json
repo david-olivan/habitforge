@@ -39,7 +39,8 @@
     "monthly_section": "Metas Mensuales",
     "no_habits": "¡No hay hábitos aún. Toca + para crear uno!",
     "back": "Atrás",
-    "add": "Agregar"
+    "add": "Agregar",
+    "archive": "Archivar"
   },
   "analytics": {
     "title": "Analíticas",
@@ -112,6 +113,8 @@
     "delete_error": "Eliminación fallida: {error}",
     "habit_saved": "¡Hábito guardado exitosamente!",
     "habit_deleted": "Hábito eliminado exitosamente",
+    "habit_archived": "Hábito archivado exitosamente",
+    "archive_error": "Error al archivar el hábito",
     "language_changed": "Idioma cambiado a Español",
     "invalid_backup": "Archivo de respaldo inválido: {error}",
     "file_picker_error": "No se pudo abrir el selector de archivos",

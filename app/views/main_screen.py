@@ -334,10 +334,11 @@ class MainScreen(MDScreen):
                 }
                 progress_dict = self.progress_data.get(habit.id, {})
 
-                Logger.debug(f"MainScreen: Creating card with on_increment callback: {self.on_increment}")
+                Logger.debug(f"MainScreen: Creating card with callbacks")
                 card = HabitCard(habit=habit_dict, progress=progress_dict)
-                card.on_increment = self.on_increment  # Set after creation
-                Logger.debug(f"MainScreen: Card created, card.on_increment={card.on_increment}")
+                card.on_increment = self.on_increment  # Set increment callback
+                card.on_edit = self.navigate_to_edit_habit  # Set edit callback
+                Logger.debug(f"MainScreen: Card created with callbacks")
                 self.habit_cards[habit.id] = card
                 section.add_widget(card)
 
@@ -457,7 +458,8 @@ class MainScreen(MDScreen):
                 progress_dict = self.progress_data.get(habit.id, {})
 
                 card = HabitCard(habit=habit_dict, progress=progress_dict)
-                card.on_increment = self.on_increment
+                card.on_increment = self.on_increment  # Set increment callback
+                card.on_edit = self.navigate_to_edit_habit  # Set edit callback
                 self.habit_cards[habit.id] = card
                 section_widget.add_widget(card)
 
@@ -471,6 +473,36 @@ class MainScreen(MDScreen):
         if app and app.root:
             Logger.info("MainScreen: Found app root screen manager, switching to habit_form")
             app.root.current = "habit_form"
+        else:
+            Logger.error("MainScreen: Could not find app root screen manager")
+
+    def navigate_to_edit_habit(self, habit_id: int):
+        """
+        Navigate to the habit form screen to edit an existing habit.
+
+        Args:
+            habit_id: The ID of the habit to edit
+        """
+        Logger.info(f"MainScreen: Navigating to edit habit ID {habit_id}")
+
+        # Get the App instance to access the root screen manager
+        from kivy.app import App
+        app = App.get_running_app()
+        if app and app.root:
+            # Remove existing habit_form screen if it exists
+            if app.root.has_screen("habit_form"):
+                app.root.remove_widget(app.root.get_screen("habit_form"))
+
+            # Import HabitFormScreen
+            from views.habit_form import HabitFormScreen
+
+            # Create new form screen with habit_id
+            form_screen = HabitFormScreen(habit_id=habit_id)
+            app.root.add_widget(form_screen)
+
+            # Navigate to it
+            app.root.current = "habit_form"
+            Logger.info(f"MainScreen: Switched to habit_form for editing")
         else:
             Logger.error("MainScreen: Could not find app root screen manager")
 

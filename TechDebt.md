@@ -114,9 +114,10 @@ This file tracks technical debt, deferred tasks, and future improvements for Hab
   - Day selector strip (Mon-Sun)
   - Current day highlight
 
-- [ ] **Add edit/delete functionality**
-  - Long-press or swipe to delete
+- [x] **Add edit/archive functionality**
   - Tap card to edit
+  - Archive button in edit form (soft delete)
+  - **Future enhancement**: View/restore archived habits screen
 
 ---
 
@@ -206,6 +207,7 @@ This file tracks technical debt, deferred tasks, and future improvements for Hab
 - [ ] Habit categories/tags
 - [ ] Custom week start day
 - [ ] Achievement badges
+- [ ] View/restore archived habits (separate screen or toggle)
 - [x] Localization (i18n) - **Basic implementation complete, see below for improvement plan**
 
 ---
@@ -247,5 +249,5 @@ This file tracks technical debt, deferred tasks, and future improvements for Hab
 
 ---
 
-**Last Updated:** December 21, 2025
+**Last Updated:** December 28, 2025
 **Next Review:** After Phase 2 completion

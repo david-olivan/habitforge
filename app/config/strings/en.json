@@ -39,7 +39,8 @@
     "monthly_section": "Monthly Goals",
     "no_habits": "No habits yet. Tap + to create one!",
     "back": "Back",
-    "add": "Add"
+    "add": "Add",
+    "archive": "Archive"
   },
   "analytics": {
     "title": "Analytics",
@@ -112,6 +113,8 @@
     "delete_error": "Delete failed: {error}",
     "habit_saved": "Habit saved successfully!",
     "habit_deleted": "Habit deleted successfully",
+    "habit_archived": "Habit archived successfully",
+    "archive_error": "Failed to archive habit",
     "language_changed": "Language changed to English",
     "invalid_backup": "Invalid backup file: {error}",
     "file_picker_error": "Could not open file picker",

@@ -71,7 +71,7 @@ class HabitFormScreen(MDScreen):
 
         # Add orange header bar
         toolbar = MDTopAppBar(
-            title=_("habits.new_habit"),
+            title=_("habits.edit_habit") if self.habit_id else _("habits.new_habit"),
             md_bg_color=BRAND_PRIMARY_RGB,
             specific_text_color=(1, 1, 1, 1),  # White text
             elevation=0,
@@ -317,6 +317,28 @@ class HabitFormScreen(MDScreen):
 
         content.add_widget(freq_section)
 
+        # === Archive Button (Edit Mode Only) ===
+        if self.habit_id:
+            archive_btn = MDRaisedButton(
+                text=_("habits.archive"),
+                size_hint_x=None,
+                md_bg_color=(1, 0.98, 0.8, 1),  # Very light yellow background
+                theme_text_color="Custom",
+                text_color=(0.5, 0.5, 0.5, 1),  # Grey text
+                font_size="16sp",  # Slightly larger text
+                padding=[dp(56), dp(28)],  # More padding
+                on_press=self._on_archive
+            )
+            # Center the archive button
+            archive_container = AnchorLayout(
+                size_hint=(1, None),
+                height=dp(56),  # Increased height for larger button
+                anchor_x="center",
+                anchor_y="center"
+            )
+            archive_container.add_widget(archive_btn)
+            content.add_widget(archive_container)
+
         # === Error Display ===
         self.error_label = MDLabel(
             text="",
@@ -362,7 +384,7 @@ class HabitFormScreen(MDScreen):
         )
 
         self.add_btn = MDRaisedButton(
-            text=_("habits.add"),
+            text=_("habits.save") if self.habit_id else _("habits.add"),
             size_hint_x=None,
             md_bg_color=BRAND_PRIMARY_RGB,  # Brand orange
             theme_text_color="Custom",
@@ -540,6 +562,25 @@ class HabitFormScreen(MDScreen):
         Logger.info("HabitForm: Cancelled")
         self._reset_form()
         self._navigate_to_main()
+
+    def _on_archive(self, instance):
+        """Handle archive button press."""
+        if not self.habit_id:
+            Logger.warning("HabitForm: Archive called but no habit_id")
+            return
+
+        from models.database import archive_habit
+
+        try:
+            success = archive_habit(self.habit_id)
+            if success:
+                Logger.info(f"HabitForm: Archived habit ID {self.habit_id}")
+                self._on_success(_("messages.habit_archived"))
+            else:
+                self._show_error(_("messages.archive_error"))
+        except Exception as e:
+            Logger.error(f"HabitForm: Error archiving habit: {e}")
+            self._show_error(f"Error archiving habit: {str(e)}")
 
     def _reset_form(self):
         """Reset the form to defaults."""
