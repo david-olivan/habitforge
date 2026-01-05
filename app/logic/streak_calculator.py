@@ -93,11 +93,19 @@ def calculate_streak(
                 period_date = get_previous_period_start(period_date, goal_type)
                 is_current_period = False
             else:
-                # Streak broken - stop counting
-                # If current period is incomplete, pending_streak = current_streak
+                # Streak broken (or current period incomplete)
                 if is_current_period:
-                    pending_streak = current_streak
-                break
+                    # Current period incomplete - skip it and check previous periods
+                    period_date = get_previous_period_start(period_date, goal_type)
+                    is_current_period = False
+                    continue
+                else:
+                    # Previous period incomplete - streak broken
+                    break
+
+        # If we completed the loop without breaking, pending_streak = current_streak
+        if current_streak > 0 and pending_streak == 0:
+            pending_streak = current_streak
 
         Logger.debug(
             f"StreakCalculator: Habit {habit_id} has current_streak={current_streak}, pending_streak={pending_streak}"
