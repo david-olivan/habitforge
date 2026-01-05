@@ -6,6 +6,7 @@ Dynamically calculates grid dimensions based on view type (week/month/year).
 """
 
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.widget import Widget
 from kivy.metrics import dp
 from datetime import date, timedelta
 from typing import Dict, Tuple, Optional
@@ -60,9 +61,17 @@ class HeatmapGrid(GridLayout):
         # Get today's date for highlighting
         today = get_today()
 
-        # Calculate grid height based on cell count and spacing
+        # Calculate padding for month view to align with weekday columns
+        padding_days = 0
+        if goal_type == 'monthly':
+            # For month view, add empty cells before day 1 to align with correct weekday
+            # .weekday() returns 0=Monday, 6=Sunday
+            padding_days = start_date.weekday()
+
+        # Calculate grid height based on cell count (including padding) and spacing
         total_days = (end_date - start_date).days + 1
-        rows = (total_days + self.cols - 1) // self.cols  # Ceiling division
+        total_cells = padding_days + total_days
+        rows = (total_cells + self.cols - 1) // self.cols  # Ceiling division
         cell_size = dp(20)
 
         # Get spacing value (it's a list [x, y], we want y for vertical spacing)
@@ -70,6 +79,11 @@ class HeatmapGrid(GridLayout):
         spacing_total = (rows - 1) * spacing_value
 
         self.height = rows * cell_size + spacing_total
+
+        # Add empty padding cells for month view alignment
+        for _ in range(padding_days):
+            spacer = Widget(size_hint=(None, None), size=(cell_size, cell_size))
+            self.add_widget(spacer)
 
         # Calculate percentage per completion based on goal type
         if goal_type == 'daily':
