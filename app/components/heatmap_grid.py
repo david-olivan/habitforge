@@ -42,7 +42,8 @@ class HeatmapGrid(GridLayout):
         completion_data: Dict[date, int],
         habit_color: str,
         goal_count: int,
-        goal_type: str
+        goal_type: str,
+        view_type: str = None
     ):
         """
         Clear and rebuild grid with cells for the specified date range.
@@ -53,7 +54,8 @@ class HeatmapGrid(GridLayout):
             completion_data: Map of {date: completion_count}
             habit_color: Hex color for this habit (e.g., "#E57373")
             goal_count: Goal count to calculate percentage
-            goal_type: 'daily', 'weekly', or 'monthly'
+            goal_type: 'daily', 'weekly', or 'monthly' (habit's goal period)
+            view_type: 'week', 'month', or 'year' (heatmap display mode, optional)
         """
         # Clear existing cells
         self.clear_widgets()
@@ -63,8 +65,8 @@ class HeatmapGrid(GridLayout):
 
         # Calculate padding for month view to align with weekday columns
         padding_days = 0
-        if goal_type == 'monthly':
-            # For month view, add empty cells before day 1 to align with correct weekday
+        if view_type == 'month':
+            # For month view display, add empty cells before day 1 to align with correct weekday
             # .weekday() returns 0=Monday, 6=Sunday
             padding_days = start_date.weekday()
 

@@ -228,7 +228,8 @@ class HabitHeatmapCard(MDCard):
                 completion_data=completion_data,
                 habit_color=self.habit['color'],
                 goal_count=self.habit['goal_count'],
-                goal_type=self.habit['goal_type']
+                goal_type=self.habit['goal_type'],
+                view_type=self.view_type
             )
 
             # Adjust card height based on grid

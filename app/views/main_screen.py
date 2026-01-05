@@ -407,7 +407,7 @@ class MainScreen(MDScreen):
         if card:
             card.progress = progress
             Logger.debug(
-                f"MainScreen: Updated card for habit '{habit.name}' with new progress for {self.selected_date} (streak: {streak})"
+                f"MainScreen: Updated card for habit '{habit.name}' with new progress for {self.selected_date} (current_streak: {current_streak}, pending: {pending_streak})"
             )
 
     def show_error(self, message: str):
