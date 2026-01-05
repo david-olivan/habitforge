@@ -28,7 +28,7 @@ source.include_exts = py,png,jpg,kv,atlas,svg
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1.5
+version = 0.2.0
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
