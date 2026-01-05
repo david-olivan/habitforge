@@ -217,12 +217,13 @@ class MainScreen(MDScreen):
             )
 
             # Calculate streak (always uses today, not selected_date)
-            streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
-            progress['streak'] = streak
+            current_streak, pending_streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
+            progress['streak'] = current_streak
+            progress['pending_streak'] = pending_streak
 
             self.progress_data[habit.id] = progress
             Logger.debug(
-                f"MainScreen: Progress for '{habit.name}' on {self.selected_date}: {progress['current_count']}/{progress['goal_count']}, Streak: {streak}"
+                f"MainScreen: Progress for '{habit.name}' on {self.selected_date}: {progress['current_count']}/{progress['goal_count']}, Streak: {current_streak} (pending: {pending_streak})"
             )
 
     def render_habit_sections(self):
@@ -395,8 +396,9 @@ class MainScreen(MDScreen):
         progress = get_habit_progress(habit.id, habit.goal_count, habit.goal_type, self.selected_date)
 
         # Recalculate streak (same as load_progress_data)
-        streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
-        progress['streak'] = streak
+        current_streak, pending_streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
+        progress['streak'] = current_streak
+        progress['pending_streak'] = pending_streak
 
         self.progress_data[habit_id] = progress
 

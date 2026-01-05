@@ -19,7 +19,7 @@ def calculate_streak(
     habit_id: int,
     goal_type: Literal["daily", "weekly", "monthly"],
     goal_count: int
-) -> int:
+) -> tuple[int, int]:
     """
     Calculate the current streak for a habit.
 
@@ -32,7 +32,9 @@ def calculate_streak(
         goal_count: The target count per period
 
     Returns:
-        int: Streak count (0 if no streak)
+        tuple[int, int]: (current_streak, pending_streak)
+        - current_streak: Includes current period if goal is met
+        - pending_streak: Excludes current period (always >= 0)
 
     Algorithm:
         1. Start from the current period (include if goal is met)
@@ -56,7 +58,8 @@ def calculate_streak(
         Result: Streak = 3
     """
     try:
-        streak = 0
+        current_streak = 0
+        pending_streak = 0
         today = get_today()
 
         # Start from the current period (include current period)
@@ -66,6 +69,9 @@ def calculate_streak(
         # Daily: 3650 days (~10 years), Weekly: 520 weeks (~10 years), Monthly: 120 months (~10 years)
         max_iterations = 3650 if goal_type == "daily" else (520 if goal_type == "weekly" else 120)
         iterations = 0
+
+        # Flag to track if we're still in the current period
+        is_current_period = True
 
         while iterations < max_iterations:
             iterations += 1
@@ -79,21 +85,28 @@ def calculate_streak(
 
             # Check if goal was met in this period
             if total_count >= goal_count:
-                streak += 1
+                current_streak += 1
+                # Only increment pending_streak for completed past periods
+                if not is_current_period:
+                    pending_streak += 1
                 # Move to the previous period
                 period_date = get_previous_period_start(period_date, goal_type)
+                is_current_period = False
             else:
                 # Streak broken - stop counting
+                # If current period is incomplete, pending_streak = current_streak
+                if is_current_period:
+                    pending_streak = current_streak
                 break
 
         Logger.debug(
-            f"StreakCalculator: Habit {habit_id} has streak of {streak} {goal_type} period(s)"
+            f"StreakCalculator: Habit {habit_id} has current_streak={current_streak}, pending_streak={pending_streak}"
         )
-        return streak
+        return (current_streak, pending_streak)
 
     except Exception as e:
         Logger.error(f"StreakCalculator: Error calculating streak for habit {habit_id}: {e}")
-        return 0  # Safe default on error
+        return (0, 0)  # Safe default on error
 
 
 def get_previous_period_start(
