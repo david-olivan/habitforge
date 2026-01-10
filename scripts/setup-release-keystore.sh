@@ -41,9 +41,30 @@ echo "2. Key password (can be same as keystore password)"
 echo "3. Your details (name, organization, etc.)"
 echo ""
 
+# Find keytool - check Windows Java installation first, then Linux
+KEYTOOL=""
+if [ -f "/c/Program Files/Microsoft/jdk-17.0.17.10-hotspot/bin/keytool.exe" ]; then
+    KEYTOOL="/c/Program Files/Microsoft/jdk-17.0.17.10-hotspot/bin/keytool.exe"
+elif command -v keytool &> /dev/null; then
+    KEYTOOL="keytool"
+else
+    echo "❌ ERROR: keytool not found!"
+    echo ""
+    echo "Please install Java JDK:"
+    echo "  - Windows: Download from https://adoptium.net/"
+    echo "  - WSL: sudo apt-get install openjdk-17-jdk"
+    exit 1
+fi
+
+echo "Using keytool: $KEYTOOL"
+echo ""
+
+# Convert Windows path to WSL path for keystore file
+WIN_KEYSTORE_PATH=$(wslpath -w "$(pwd)/$KEYSTORE_FILE" 2>/dev/null || echo "$KEYSTORE_FILE")
+
 # Generate keystore with keytool
-keytool -genkey -v \
-  -keystore "$KEYSTORE_FILE" \
+"$KEYTOOL" -genkey -v \
+  -keystore "$WIN_KEYSTORE_PATH" \
   -alias "$ALIAS" \
   -keyalg RSA \
   -keysize 2048 \
