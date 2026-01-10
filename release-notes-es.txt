@@ -1,0 +1,13 @@
+HabitForge v0.2.0 - Primera Versión
+
+Construye mejores hábitos con seguimiento que prioriza tu privacidad. Sin inicio de sesión, sin nube, 100% offline.
+
+Nuevo:
+• Hábitos diarios, semanales, mensuales con colores
+• Rastrea completaciones con llamas de racha
+• Mapas de calor muestran tus patrones de consistencia
+• Edita y archiva hábitos sin perder historial
+• Exporta/importa tus datos (CSV/JSON)
+• Soporte en inglés y español
+
+Seguimiento simple, privado y efectivo para Android 7.0+

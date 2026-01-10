@@ -1,0 +1,13 @@
+HabitForge v0.2.0 - First Release
+
+Build better habits with privacy-first tracking. No login, no cloud, 100% offline.
+
+New in this release:
+• Create daily, weekly, monthly habits with color coding
+• Track completions and view progress with streak flames
+• Calendar heatmaps show your consistency patterns
+• Edit and archive habits without losing history
+• Export/import your data (CSV/JSON)
+• Full English and Spanish support
+
+Simple, private, and effective habit tracking for Android 7.0+
