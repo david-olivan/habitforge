@@ -18,6 +18,7 @@ from views.main_screen import MainScreen
 from views.analytics_content import AnalyticsContent
 from views.account_content import AccountContent
 from config.constants import BRAND_PRIMARY_RGB
+from logic.localization import _
 
 
 class MainContainerScreen(MDScreen):
@@ -57,7 +58,7 @@ class MainContainerScreen(MDScreen):
 
         # App title bar (no logo, just title)
         self.toolbar = MDTopAppBar(
-            title="HabitForge",
+            title=_("app_name"),
             md_bg_color=BRAND_PRIMARY_RGB,  # Brand orange
             specific_text_color=(1, 1, 1, 1),  # White text
             elevation=0,
@@ -74,31 +75,32 @@ class MainContainerScreen(MDScreen):
         )
 
         # Habits Tab (existing MainScreen content)
-        habits_tab = MDBottomNavigationItem(
-            name="habits", text="Habits", icon="format-list-checkbox"
+        self.habits_tab = MDBottomNavigationItem(
+            name="habits", text=_("tabs.habits"), icon="format-list-checkbox"
         )
         self.habits_screen = MainScreen(embedded=True)
-        habits_tab.add_widget(self.habits_screen)
+        self.habits_tab.add_widget(self.habits_screen)
 
         # Manually trigger habit loading since on_enter won't fire for embedded screens
         self.habits_screen.load_habits()
 
         # Analytics Tab (placeholder)
-        analytics_tab = MDBottomNavigationItem(
-            name="analytics", text="Analytics", icon="chart-bar"
+        self.analytics_tab = MDBottomNavigationItem(
+            name="analytics", text=_("tabs.analytics"), icon="chart-bar"
         )
         self.analytics_content = AnalyticsContent()
-        analytics_tab.add_widget(self.analytics_content)
+        self.analytics_tab.add_widget(self.analytics_content)
 
         # Account Tab (placeholder)
-        account_tab = MDBottomNavigationItem(
-            name="account", text="Account", icon="account-circle"
+        self.account_tab = MDBottomNavigationItem(
+            name="account", text=_("tabs.account"), icon="account-circle"
         )
-        account_tab.add_widget(AccountContent())
+        self.account_content = AccountContent()
+        self.account_tab.add_widget(self.account_content)
 
-        self.bottom_nav.add_widget(habits_tab)
-        self.bottom_nav.add_widget(analytics_tab)
-        self.bottom_nav.add_widget(account_tab)
+        self.bottom_nav.add_widget(self.habits_tab)
+        self.bottom_nav.add_widget(self.analytics_tab)
+        self.bottom_nav.add_widget(self.account_tab)
 
         # Bind to tab switch event to refresh analytics when user navigates to it
         self.bottom_nav.bind(on_switch_tabs=self._on_tab_switch)

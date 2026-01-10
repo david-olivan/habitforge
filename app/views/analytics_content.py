@@ -24,6 +24,7 @@ from components.heatmap_grid import HeatmapGrid
 from logic.heatmap_data import get_heatmap_data, calculate_overall_percentage
 from logic.date_utils import get_today
 from config.constants import BRAND_PRIMARY_RGB, hex_to_rgba
+from logic.localization import _
 from kivy.logger import Logger
 
 
@@ -227,7 +228,8 @@ class HabitHeatmapCard(MDCard):
                 completion_data=completion_data,
                 habit_color=self.habit['color'],
                 goal_count=self.habit['goal_count'],
-                goal_type=self.habit['goal_type']
+                goal_type=self.habit['goal_type'],
+                view_type=self.view_type
             )
 
             # Adjust card height based on grid
@@ -421,6 +423,24 @@ class AnalyticsContent(MDBoxLayout):
         self._update_date_label()
         self._reload_all_heatmaps()
 
+    def _get_translated_month(self, month_num: int) -> str:
+        """
+        Get translated month name.
+
+        Args:
+            month_num: Month number (1-12)
+
+        Returns:
+            str: Translated month name
+        """
+        month_keys = [
+            "january", "february", "march", "april", "may", "june",
+            "july", "august", "september", "october", "november", "december"
+        ]
+        if 1 <= month_num <= 12:
+            return _(f"analytics.months.{month_keys[month_num - 1]}")
+        return ""
+
     def _update_date_label(self):
         """Update navigation bar date label based on current view."""
         if self.current_view == "week":
@@ -428,12 +448,18 @@ class AnalyticsContent(MDBoxLayout):
             days_since_monday = self.reference_date.weekday()
             week_start = self.reference_date - relativedelta(days=days_since_monday)
             week_end = week_start + relativedelta(days=6)
+
+            # Get translated month names (abbreviated to first 3 letters)
+            start_month = self._get_translated_month(week_start.month)[:3]
+            end_month = self._get_translated_month(week_end.month)[:3]
+
             self.nav_bar.date_label_text = (
-                f"Week of {week_start.strftime('%b %d')} - {week_end.strftime('%b %d')}"
+                f"{_('analytics.week')} {start_month} {week_start.day} - {end_month} {week_end.day}"
             )
 
         elif self.current_view == "month":
-            self.nav_bar.date_label_text = self.reference_date.strftime("%B %Y")
+            month_name = self._get_translated_month(self.reference_date.month)
+            self.nav_bar.date_label_text = f"{month_name} {self.reference_date.year}"
 
         elif self.current_view == "year":
             self.nav_bar.date_label_text = str(self.reference_date.year)

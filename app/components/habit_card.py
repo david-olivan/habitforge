@@ -75,6 +75,7 @@ class HabitCard(MDCard):
     on_increment = ObjectProperty(
         None
     )  # Callback function when increment button pressed
+    on_edit = ObjectProperty(None)  # Callback when card is tapped
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -285,16 +286,24 @@ class HabitCard(MDCard):
                 self.name_label.text = habit_name  # Plain text
 
         # Update streak display
-        streak = self.progress.get("streak", 0)
-        self.streak_label.text = str(streak)
+        current_streak = self.progress.get("streak", 0)
+        pending_streak = self.progress.get("pending_streak", 0)
 
-        if streak > 0:
-            # Active streak - pale orange (brand flame color)
+        # Determine which streak to show and in what color
+        if goal_met and current_streak > 0:
+            # Goal met in current period - show current streak in orange
+            self.streak_label.text = str(current_streak)
             flame_color = hex_to_rgba(BRAND_FLAME_MID)
             self.streak_label.text_color = flame_color
             self.streak_icon.text_color = flame_color
+        elif pending_streak > 0:
+            # Goal not met yet, but have pending streak - show in grey
+            self.streak_label.text = str(pending_streak)
+            self.streak_label.text_color = COLOR_DARK_GREY
+            self.streak_icon.text_color = COLOR_DARK_GREY
         else:
-            # No streak - grey
+            # No streak at all - show 0 in grey
+            self.streak_label.text = "0"
             self.streak_label.text_color = COLOR_DARK_GREY
             self.streak_icon.text_color = COLOR_DARK_GREY
 
@@ -333,6 +342,30 @@ class HabitCard(MDCard):
                 Logger.warning("HabitCard: No habit_id found in habit data")
         else:
             Logger.warning(f"HabitCard: on_increment={self.on_increment}, habit={self.habit}")
+
+    def on_touch_down(self, touch):
+        """Handle touch events on the card."""
+        from kivy.logger import Logger
+
+        # Check if touch is within card bounds
+        if not self.collide_point(*touch.pos):
+            return super().on_touch_down(touch)
+
+        # Check if touch is on the increment button - let button handle it
+        if self.increment_btn.collide_point(*touch.pos):
+            return super().on_touch_down(touch)
+
+        # Touch is on card but not button - trigger edit
+        Logger.info(f"HabitCard: Card tapped for habit {self.habit}")
+        if self.on_edit and self.habit:
+            habit_id = self.habit.get("id")
+            if habit_id:
+                Logger.info(f"HabitCard: Calling on_edit with habit_id={habit_id}")
+                self.on_edit(habit_id)
+            else:
+                Logger.warning("HabitCard: No habit_id in habit data")
+
+        return True  # Consume the event
 
     def update_data(self, habit_dict, progress_dict):
         """

@@ -23,6 +23,7 @@ from logic.streak_calculator import calculate_streak
 from components.habit_card import HabitCard
 from components.date_strip import DateNavigationStrip, STRIP_HEIGHT
 from config.constants import GOAL_TYPE_LABELS, BRAND_PRIMARY_RGB
+from logic.localization import _
 from kivy.logger import Logger
 
 
@@ -216,12 +217,13 @@ class MainScreen(MDScreen):
             )
 
             # Calculate streak (always uses today, not selected_date)
-            streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
-            progress['streak'] = streak
+            current_streak, pending_streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
+            progress['streak'] = current_streak
+            progress['pending_streak'] = pending_streak
 
             self.progress_data[habit.id] = progress
             Logger.debug(
-                f"MainScreen: Progress for '{habit.name}' on {self.selected_date}: {progress['current_count']}/{progress['goal_count']}, Streak: {streak}"
+                f"MainScreen: Progress for '{habit.name}' on {self.selected_date}: {progress['current_count']}/{progress['goal_count']}, Streak: {current_streak} (pending: {pending_streak})"
             )
 
     def render_habit_sections(self):
@@ -236,15 +238,15 @@ class MainScreen(MDScreen):
 
         # Render Daily section
         if self.daily_habits:
-            self.render_section("Daily Goals", self.daily_habits)
+            self.render_section(_("habits.daily_section"), self.daily_habits)
 
         # Render Weekly section
         if self.weekly_habits:
-            self.render_section("Weekly Goals", self.weekly_habits)
+            self.render_section(_("habits.weekly_section"), self.weekly_habits)
 
         # Render Monthly section
         if self.monthly_habits:
-            self.render_section("Monthly Goals", self.monthly_habits)
+            self.render_section(_("habits.monthly_section"), self.monthly_habits)
 
         # Add bottom spacer to prevent FAB from covering last habit's buttons
         # FAB clearance: 56dp (FAB) + 16dp (margin) + 16dp (safe scroll) = 88dp
@@ -333,10 +335,11 @@ class MainScreen(MDScreen):
                 }
                 progress_dict = self.progress_data.get(habit.id, {})
 
-                Logger.debug(f"MainScreen: Creating card with on_increment callback: {self.on_increment}")
+                Logger.debug(f"MainScreen: Creating card with callbacks")
                 card = HabitCard(habit=habit_dict, progress=progress_dict)
-                card.on_increment = self.on_increment  # Set after creation
-                Logger.debug(f"MainScreen: Card created, card.on_increment={card.on_increment}")
+                card.on_increment = self.on_increment  # Set increment callback
+                card.on_edit = self.navigate_to_edit_habit  # Set edit callback
+                Logger.debug(f"MainScreen: Card created with callbacks")
                 self.habit_cards[habit.id] = card
                 section.add_widget(card)
 
@@ -393,8 +396,9 @@ class MainScreen(MDScreen):
         progress = get_habit_progress(habit.id, habit.goal_count, habit.goal_type, self.selected_date)
 
         # Recalculate streak (same as load_progress_data)
-        streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
-        progress['streak'] = streak
+        current_streak, pending_streak = calculate_streak(habit.id, habit.goal_type, habit.goal_count)
+        progress['streak'] = current_streak
+        progress['pending_streak'] = pending_streak
 
         self.progress_data[habit_id] = progress
 
@@ -403,7 +407,7 @@ class MainScreen(MDScreen):
         if card:
             card.progress = progress
             Logger.debug(
-                f"MainScreen: Updated card for habit '{habit.name}' with new progress for {self.selected_date} (streak: {streak})"
+                f"MainScreen: Updated card for habit '{habit.name}' with new progress for {self.selected_date} (current_streak: {current_streak}, pending: {pending_streak})"
             )
 
     def show_error(self, message: str):
@@ -456,7 +460,8 @@ class MainScreen(MDScreen):
                 progress_dict = self.progress_data.get(habit.id, {})
 
                 card = HabitCard(habit=habit_dict, progress=progress_dict)
-                card.on_increment = self.on_increment
+                card.on_increment = self.on_increment  # Set increment callback
+                card.on_edit = self.navigate_to_edit_habit  # Set edit callback
                 self.habit_cards[habit.id] = card
                 section_widget.add_widget(card)
 
@@ -470,6 +475,36 @@ class MainScreen(MDScreen):
         if app and app.root:
             Logger.info("MainScreen: Found app root screen manager, switching to habit_form")
             app.root.current = "habit_form"
+        else:
+            Logger.error("MainScreen: Could not find app root screen manager")
+
+    def navigate_to_edit_habit(self, habit_id: int):
+        """
+        Navigate to the habit form screen to edit an existing habit.
+
+        Args:
+            habit_id: The ID of the habit to edit
+        """
+        Logger.info(f"MainScreen: Navigating to edit habit ID {habit_id}")
+
+        # Get the App instance to access the root screen manager
+        from kivy.app import App
+        app = App.get_running_app()
+        if app and app.root:
+            # Remove existing habit_form screen if it exists
+            if app.root.has_screen("habit_form"):
+                app.root.remove_widget(app.root.get_screen("habit_form"))
+
+            # Import HabitFormScreen
+            from views.habit_form import HabitFormScreen
+
+            # Create new form screen with habit_id
+            form_screen = HabitFormScreen(habit_id=habit_id)
+            app.root.add_widget(form_screen)
+
+            # Navigate to it
+            app.root.current = "habit_form"
+            Logger.info(f"MainScreen: Switched to habit_form for editing")
         else:
             Logger.error("MainScreen: Could not find app root screen manager")
 

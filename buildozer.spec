@@ -13,7 +13,7 @@ package.domain = com.davs
 source.dir = app
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,svg
+source.include_exts = py,png,jpg,kv,atlas,svg,json
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png
@@ -28,7 +28,7 @@ source.include_exts = py,png,jpg,kv,atlas,svg
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1.5
+version = 0.2.0
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
@@ -59,6 +59,10 @@ fullscreen = 0
 
 # (bool) Indicate if the application should be fullscreen or not
 android.permissions =
+
+# (str) The format used to package the app for release mode (aab or apk)
+# Required for Google Play Store (AAB mandatory for new apps since Aug 2021)
+android.release_artifact = aab
 
 # (int) Target Android API, should be as high as possible.
 # Google Play requires API 35 (Android 15) as of August 31, 2025

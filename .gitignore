@@ -11,6 +11,7 @@ env/
 .buildozer/
 bin/*.apk
 bin/*.aab
+bin/*.idsig
 build/
 dist/
 
@@ -35,3 +36,6 @@ EOF
 
 # Locales
 docs/Prompts para Claude.txt
+docs/github-issues
+CHECKLIST.md
+linkedin.md

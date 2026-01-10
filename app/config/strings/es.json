@@ -1,0 +1,123 @@
+{
+  "app_name": "HabitForge",
+  "tabs": {
+    "habits": "Hábitos",
+    "analytics": "Analíticas",
+    "account": "Cuenta"
+  },
+  "account": {
+    "title": "Configuración de Cuenta",
+    "localization_section": "Idioma",
+    "data_section": "Gestión de Datos",
+    "export_button": "Exportar Datos",
+    "import_button": "Importar Datos",
+    "delete_button": "Eliminar Todos los Datos",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "habits": {
+    "new_habit": "Nuevo Hábito",
+    "edit_habit": "Editar Hábito",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "name_label": "Nombre",
+    "habit_name": "Nombre del Hábito",
+    "habit_name_helper": "Ingrese un nombre único (1-50 caracteres)",
+    "habit_color": "Color",
+    "frequency_of": "Frecuencia de",
+    "per": "por",
+    "day": "Día",
+    "week": "Semana",
+    "month": "Mes",
+    "goal_type": "Tipo de Meta",
+    "goal_count": "Cantidad de Meta",
+    "daily": "Diario",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "daily_section": "Metas Diarias",
+    "weekly_section": "Metas Semanales",
+    "monthly_section": "Metas Mensuales",
+    "no_habits": "¡No hay hábitos aún. Toca + para crear uno!",
+    "back": "Atrás",
+    "add": "Agregar",
+    "archive": "Archivar"
+  },
+  "analytics": {
+    "title": "Analíticas",
+    "week": "Semana",
+    "month": "Mes",
+    "year": "Año",
+    "today": "Hoy",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "months": {
+      "january": "Enero",
+      "february": "Febrero",
+      "march": "Marzo",
+      "april": "Abril",
+      "may": "Mayo",
+      "june": "Junio",
+      "july": "Julio",
+      "august": "Agosto",
+      "september": "Septiembre",
+      "october": "Octubre",
+      "november": "Noviembre",
+      "december": "Diciembre"
+    }
+  },
+  "dialogs": {
+    "import_warning_template": "Esto eliminará {habit_count} hábitos y {completion_count} completados",
+    "delete_warning_template": "Esto eliminará {habit_count} hábitos y {completion_count} completados",
+    "import_warning": "Esto eliminará {habit_count} hábitos y {completion_count} completados",
+    "delete_warning": "Esto eliminará {habit_count} hábitos y {completion_count} completados",
+    "i_understand": "Entiendo",
+    "are_you_sure": "¿Estás seguro?",
+    "yes": "Sí",
+    "no": "No",
+    "success": "Éxito",
+    "error": "Error"
+  },
+  "screens": {
+    "import_data": {
+      "title": "Importar Datos",
+      "warning_title": "Advertencia",
+      "warning_message": "Esto reemplazará todos los datos actuales",
+      "current_data": "{habit_count} hábitos, {completion_count} completados",
+      "subtitle": "Elige un archivo de respaldo para restaurar",
+      "choose_file": "Elegir Archivo de Respaldo (.zip)",
+      "file_selected": "Seleccionado: {filename}",
+      "no_file": "Ningún archivo seleccionado",
+      "import_button": "Importar Datos",
+      "importing": "Importando...",
+      "cancel": "Cancelar"
+    },
+    "delete_data": {
+      "title": "Eliminar Todos los Datos",
+      "warning_title": "Acción Permanente",
+      "warning_message": "Esto eliminará permanentemente todos los datos",
+      "current_data": "Perderás: {habit_count} hábitos, {completion_count} completados",
+      "subtitle": "Esta acción no se puede deshacer",
+      "confirmation_label": "Escribe DELETE para confirmar",
+      "confirmation_placeholder": "Escribe aquí...",
+      "delete_button": "Eliminar Todo",
+      "deleting": "Eliminando...",
+      "cancel": "Cancelar"
+    }
+  },
+  "messages": {
+    "export_success": "Respaldo guardado en Descargas/{filename}",
+    "export_error": "Exportación fallida: {error}",
+    "import_success": "Datos importados exitosamente",
+    "import_error": "Importación fallida: {error}",
+    "delete_success": "Todos los datos eliminados",
+    "delete_error": "Eliminación fallida: {error}",
+    "habit_saved": "¡Hábito guardado exitosamente!",
+    "habit_deleted": "Hábito eliminado exitosamente",
+    "habit_archived": "Hábito archivado exitosamente",
+    "archive_error": "Error al archivar el hábito",
+    "language_changed": "Idioma cambiado a Español",
+    "invalid_backup": "Archivo de respaldo inválido: {error}",
+    "file_picker_error": "No se pudo abrir el selector de archivos",
+    "permissions_required": "Se requiere permiso de almacenamiento"
+  }
+}

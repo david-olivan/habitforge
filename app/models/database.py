@@ -117,8 +117,27 @@ def init_database() -> None:
                 """
             )
 
+            # Create settings table
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS settings (
+                    key TEXT PRIMARY KEY,
+                    value TEXT NOT NULL,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+
             # Enable foreign key constraints (SQLite disables by default)
             cursor.execute("PRAGMA foreign_keys = ON")
+
+            # Initialize default language setting if not exists
+            cursor.execute(
+                """
+                INSERT OR IGNORE INTO settings (key, value)
+                VALUES ('language', 'en')
+                """
+            )
 
             conn.commit()
             Logger.info("Database: Successfully initialized tables")
@@ -662,4 +681,86 @@ def get_completions_for_date_range(
             return completions_by_habit
     except sqlite3.Error as e:
         Logger.error(f"Database: Error retrieving completions for date range: {e}")
+        return {}
+
+
+# ============================================
+# SETTINGS CRUD OPERATIONS
+# ============================================
+
+
+def get_setting(key: str) -> Optional[str]:
+    """
+    Get a setting value by key.
+
+    Args:
+        key: Setting key to retrieve
+
+    Returns:
+        Optional[str]: Setting value if found, None otherwise
+    """
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT value FROM settings WHERE key = ?", (key,))
+            row = cursor.fetchone()
+            if row:
+                Logger.debug(f"Database: Retrieved setting '{key}' = '{row[0]}'")
+                return row[0]
+            Logger.debug(f"Database: Setting '{key}' not found")
+            return None
+    except sqlite3.Error as e:
+        Logger.error(f"Database: Error retrieving setting '{key}': {e}")
+        return None
+
+
+def set_setting(key: str, value: str) -> bool:
+    """
+    Set a setting value (insert or update).
+
+    Args:
+        key: Setting key
+        value: Setting value
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT INTO settings (key, value, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(key) DO UPDATE SET
+                    value = excluded.value,
+                    updated_at = CURRENT_TIMESTAMP
+                """,
+                (key, value),
+            )
+            conn.commit()
+            Logger.info(f"Database: Set setting '{key}' = '{value}'")
+            return True
+    except sqlite3.Error as e:
+        Logger.error(f"Database: Error setting '{key}': {e}")
+        return False
+
+
+def get_all_settings() -> Dict[str, str]:
+    """
+    Get all settings as a dictionary.
+
+    Returns:
+        Dict[str, str]: Dictionary of all settings (key: value)
+    """
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT key, value FROM settings")
+            rows = cursor.fetchall()
+            settings = {row[0]: row[1] for row in rows}
+            Logger.info(f"Database: Retrieved {len(settings)} settings")
+            return settings
+    except sqlite3.Error as e:
+        Logger.error(f"Database: Error retrieving all settings: {e}")
         return {}

@@ -6,6 +6,9 @@ kivymd==1.2.0
 # Date/Time Utilities
 python-dateutil==2.9.0
 
+# File picker for Android
+plyer==2.1.0
+
 # KivyMD 1.2.0 dependencies (missing from previous builds)
 filetype==1.2.0
 pillow==10.4.0

@@ -1,0 +1,123 @@
+{
+  "app_name": "HabitForge",
+  "tabs": {
+    "habits": "Habits",
+    "analytics": "Analytics",
+    "account": "Account"
+  },
+  "account": {
+    "title": "Account Settings",
+    "localization_section": "Language",
+    "data_section": "Data Management",
+    "export_button": "Export Data",
+    "import_button": "Import Data",
+    "delete_button": "Delete All Data",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "habits": {
+    "new_habit": "New Habit",
+    "edit_habit": "Edit Habit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "name_label": "Name",
+    "habit_name": "Habit Name",
+    "habit_name_helper": "Enter a unique name (1-50 characters)",
+    "habit_color": "Color",
+    "frequency_of": "Frequency of",
+    "per": "per",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
+    "goal_type": "Goal Type",
+    "goal_count": "Goal Count",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "daily_section": "Daily Goals",
+    "weekly_section": "Weekly Goals",
+    "monthly_section": "Monthly Goals",
+    "no_habits": "No habits yet. Tap + to create one!",
+    "back": "Back",
+    "add": "Add",
+    "archive": "Archive"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year",
+    "today": "Today",
+    "previous": "Previous",
+    "next": "Next",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    }
+  },
+  "dialogs": {
+    "import_warning_template": "This will delete {habit_count} habits and {completion_count} completions",
+    "delete_warning_template": "This will delete {habit_count} habits and {completion_count} completions",
+    "import_warning": "This will delete {habit_count} habits and {completion_count} completions",
+    "delete_warning": "This will delete {habit_count} habits and {completion_count} completions",
+    "i_understand": "I Understand",
+    "are_you_sure": "Are you sure?",
+    "yes": "Yes",
+    "no": "No",
+    "success": "Success",
+    "error": "Error"
+  },
+  "screens": {
+    "import_data": {
+      "title": "Import Data",
+      "warning_title": "Warning",
+      "warning_message": "This will replace all current data",
+      "current_data": "{habit_count} habits, {completion_count} completions",
+      "subtitle": "Choose a backup file to restore",
+      "choose_file": "Choose Backup File (.zip)",
+      "file_selected": "Selected: {filename}",
+      "no_file": "No file selected",
+      "import_button": "Import Data",
+      "importing": "Importing...",
+      "cancel": "Cancel"
+    },
+    "delete_data": {
+      "title": "Delete All Data",
+      "warning_title": "Permanent Action",
+      "warning_message": "This will permanently delete all data",
+      "current_data": "You will lose: {habit_count} habits, {completion_count} completions",
+      "subtitle": "This action cannot be undone",
+      "confirmation_label": "Type DELETE to confirm",
+      "confirmation_placeholder": "Type here...",
+      "delete_button": "Delete Everything",
+      "deleting": "Deleting...",
+      "cancel": "Cancel"
+    }
+  },
+  "messages": {
+    "export_success": "Backup saved to Downloads/{filename}",
+    "export_error": "Export failed: {error}",
+    "import_success": "Data imported successfully",
+    "import_error": "Import failed: {error}",
+    "delete_success": "All data deleted",
+    "delete_error": "Delete failed: {error}",
+    "habit_saved": "Habit saved successfully!",
+    "habit_deleted": "Habit deleted successfully",
+    "habit_archived": "Habit archived successfully",
+    "archive_error": "Failed to archive habit",
+    "language_changed": "Language changed to English",
+    "invalid_backup": "Invalid backup file: {error}",
+    "file_picker_error": "Could not open file picker",
+    "permissions_required": "Storage permission required"
+  }
+}

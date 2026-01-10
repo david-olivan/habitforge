@@ -6,6 +6,7 @@ Dynamically calculates grid dimensions based on view type (week/month/year).
 """
 
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.widget import Widget
 from kivy.metrics import dp
 from datetime import date, timedelta
 from typing import Dict, Tuple, Optional
@@ -41,7 +42,8 @@ class HeatmapGrid(GridLayout):
         completion_data: Dict[date, int],
         habit_color: str,
         goal_count: int,
-        goal_type: str
+        goal_type: str,
+        view_type: str = None
     ):
         """
         Clear and rebuild grid with cells for the specified date range.
@@ -52,7 +54,8 @@ class HeatmapGrid(GridLayout):
             completion_data: Map of {date: completion_count}
             habit_color: Hex color for this habit (e.g., "#E57373")
             goal_count: Goal count to calculate percentage
-            goal_type: 'daily', 'weekly', or 'monthly'
+            goal_type: 'daily', 'weekly', or 'monthly' (habit's goal period)
+            view_type: 'week', 'month', or 'year' (heatmap display mode, optional)
         """
         # Clear existing cells
         self.clear_widgets()
@@ -60,9 +63,17 @@ class HeatmapGrid(GridLayout):
         # Get today's date for highlighting
         today = get_today()
 
-        # Calculate grid height based on cell count and spacing
+        # Calculate padding for month view to align with weekday columns
+        padding_days = 0
+        if view_type == 'month':
+            # For month view display, add empty cells before day 1 to align with correct weekday
+            # .weekday() returns 0=Monday, 6=Sunday
+            padding_days = start_date.weekday()
+
+        # Calculate grid height based on cell count (including padding) and spacing
         total_days = (end_date - start_date).days + 1
-        rows = (total_days + self.cols - 1) // self.cols  # Ceiling division
+        total_cells = padding_days + total_days
+        rows = (total_cells + self.cols - 1) // self.cols  # Ceiling division
         cell_size = dp(20)
 
         # Get spacing value (it's a list [x, y], we want y for vertical spacing)
@@ -70,6 +81,11 @@ class HeatmapGrid(GridLayout):
         spacing_total = (rows - 1) * spacing_value
 
         self.height = rows * cell_size + spacing_total
+
+        # Add empty padding cells for month view alignment
+        for _ in range(padding_days):
+            spacer = Widget(size_hint=(None, None), size=(cell_size, cell_size))
+            self.add_widget(spacer)
 
         # Calculate percentage per completion based on goal type
         if goal_type == 'daily':
