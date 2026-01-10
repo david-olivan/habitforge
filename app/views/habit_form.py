@@ -350,7 +350,7 @@ class HabitFormScreen(MDScreen):
         content.add_widget(self.error_label)
 
         # Spacer to push content if needed
-        content.add_widget(MDLabel(size_hint_y=None, height=dp(20)))
+        content.add_widget(MDLabel(size_hint_y=None, height=dp(40)))
 
         scroll_view.add_widget(content)
         main_layout.add_widget(scroll_view)
@@ -362,7 +362,7 @@ class HabitFormScreen(MDScreen):
             height=dp(104),  # Increased height for more spacing
             anchor_x="center",
             anchor_y="center",
-            padding=[0, 0, 0, dp(24)]  # 24dp bottom padding for Android nav bar
+            padding=[0, 0, 0, dp(88)]  # Match main_screen clearance for consistency
         )
 
         # Button container - auto-sizes based on children
