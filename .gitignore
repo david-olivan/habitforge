@@ -32,7 +32,12 @@ Thumbs.db
 
 # Local testing
 habitforge.db
-EOF
+
+# Coverage reports
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
 
 # Locales
 docs/Prompts para Claude.txt
