@@ -3,30 +3,30 @@
   <path d="M256 80C256 80 220 120 220 160C220 186 235 208 256 208C277 208 292 186 292 160C292 120 256 80 256 80Z" fill="#FF6B35"/>
   <path d="M256 100C256 100 235 130 235 155C235 170 243 183 256 183C269 183 277 170 277 155C277 130 256 100 256 100Z" fill="#FFB84D"/>
   <path d="M256 120C256 120 245 140 245 155C245 165 249 173 256 173C263 173 267 165 267 155C267 140 256 120 256 120Z" fill="#FFF4A3"/>
-  
+
   <!-- Anvil base -->
   <rect x="180" y="280" width="152" height="40" rx="8" fill="#3D3D3D"/>
-  
+
   <!-- Anvil body (main block) -->
   <path d="M160 320 L160 360 L190 380 L322 380 L352 360 L352 320 Z" fill="#505050"/>
-  
+
   <!-- Anvil horn (left side, curved upward extension) -->
   <path d="M160 280 L140 280 L140 320 L160 320 Z" fill="#5A5A5A"/>
-  
+
   <!-- Anvil face (top working surface) -->
   <ellipse cx="256" cy="280" rx="76" ry="12" fill="#6B6B6B"/>
-  
+
   <!-- Highlight on anvil (gives it dimension) -->
   <ellipse cx="256" cy="278" rx="60" ry="8" fill="#7A7A7A" opacity="0.6"/>
-  
+
   <!-- Anvil base/foot -->
   <rect x="190" y="380" width="132" height="32" rx="4" fill="#2A2A2A"/>
-  
+
   <!-- Hammer striking effect (small spark/impact) -->
   <circle cx="280" cy="265" r="4" fill="#FFB84D" opacity="0.8"/>
   <circle cx="290" cy="270" r="3" fill="#FF6B35" opacity="0.7"/>
   <circle cx="275" cy="255" r="3" fill="#FFF4A3" opacity="0.9"/>
-  
+
   <!-- Circular badge background (optional, for app icon variant) -->
   <circle cx="256" cy="256" r="240" fill="none" stroke="#E8E8E8" stroke-width="8" opacity="0.1"/>
 </svg>

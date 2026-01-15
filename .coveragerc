@@ -1,0 +1,73 @@
+# Coverage.py configuration for HabitForge
+# https://coverage.readthedocs.io/en/latest/config.html
+
+[run]
+# Source code to measure coverage for
+source = app/
+
+# Files/directories to omit from coverage
+omit =
+    # Main entry point (hard to test)
+    app/main.py
+    # UI components (require Kivy runtime)
+    app/views/*
+    app/components/*
+    # Data directory (runtime generated)
+    app/data/*
+    # Utils (mostly empty)
+    app/utils/*
+    # Test files themselves
+    tests/*
+    # Virtual environment
+    venv/*
+    .venv/*
+
+# Measure branch coverage in addition to statement coverage
+branch = True
+
+[report]
+# Regexes for lines to exclude from consideration
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+
+    # Don't complain about missing debug-only code
+    def __repr__
+
+    # Don't complain if tests don't hit defensive assertion code
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain if non-runnable code isn't run
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+
+    # Don't complain about abstract methods
+    @abstractmethod
+
+    # Don't complain about Kivy-specific code
+    if platform == 'android':
+    if platform == 'ios':
+
+# Ignore errors from source files that can't be found
+ignore_errors = False
+
+# Show line numbers of statements that weren't executed
+show_missing = True
+
+# Precision for coverage percentage
+precision = 2
+
+# Skip empty files
+skip_empty = True
+
+# Sort report by coverage percentage (lowest first)
+sort = Cover
+
+[html]
+# Directory for HTML coverage report
+directory = htmlcov
+
+[xml]
+# File for XML coverage report (for Codecov)
+output = coverage.xml

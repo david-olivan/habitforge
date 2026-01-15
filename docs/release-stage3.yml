@@ -10,14 +10,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 90  # Prevent runaway builds
-    
+
     steps:
       # Step 1: Checkout code with full history
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       # Step 2: Restore build cache (speeds up subsequent builds)
       - name: Cache Buildozer
         uses: actions/cache@v3
@@ -27,7 +27,7 @@ jobs:
           key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
           restore-keys: |
             buildozer-${{ runner.os }}-
-      
+
       # Step 3: Generate changelog
       - name: Generate Changelog
         id: changelog
@@ -36,7 +36,7 @@ jobs:
           configuration: ".github/changelog-config.json"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       # Step 4: Update version in buildozer.spec
       - name: Update Version
         run: |
@@ -44,7 +44,7 @@ jobs:
           echo "Updating version to: $VERSION"
           sed -i "s/^version = .*/version = $VERSION/" buildozer.spec
           grep "^version" buildozer.spec
-      
+
       # Step 5: Free disk space (GitHub runners have limited space)
       - name: Free Disk Space
         run: |
@@ -55,7 +55,7 @@ jobs:
           sudo rm -rf /usr/local/share/boost
           echo "Disk space after cleanup:"
           df -h
-      
+
       # Step 6: Build APK using Docker
       - name: Build APK with Docker
         run: |
@@ -64,11 +64,11 @@ jobs:
             -w /app \
             kivy/buildozer \
             buildozer android debug
-          
+
           # Fix permissions (Docker runs as root)
           sudo chown -R $USER:$USER .buildozer || true
           sudo chown -R $USER:$USER bin || true
-      
+
       # Step 7: Find the built APK
       - name: Find APK
         id: find_apk
@@ -82,25 +82,25 @@ jobs:
           echo "APK_PATH=$APK_PATH" >> $GITHUB_ENV
           echo "Found APK: $APK_PATH"
           ls -lh "$APK_PATH"
-      
+
       # Step 8: Create GitHub Release with APK
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           body: |
             ## Release Notes
-            
+
             ${{ steps.changelog.outputs.changelog }}
-            
+
             ## Installation
-            
+
             1. Download the APK below
             2. Enable "Install from Unknown Sources" on your Android device
             3. Install the APK
             4. Open Habit Tracker
-            
+
             ## Device Compatibility
-            
+
             - Android 7.0 (API 24) or higher
             - ARM64-v8a architecture (tested on Honor Magic6)
           draft: true
@@ -108,7 +108,7 @@ jobs:
           files: ${{ env.APK_PATH }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       # Step 9: Notify on failure
       - name: Notify on Failure
         if: failure()

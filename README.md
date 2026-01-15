@@ -1,6 +1,8 @@
 # HabitForge
 
 [![Release](https://github.com/david-olivan/habitforge/actions/workflows/release.yml/badge.svg)](https://github.com/david-olivan/habitforge/actions/workflows/release.yml)
+[![Tests](https://github.com/david-olivan/habitforge/actions/workflows/tests.yml/badge.svg)](https://github.com/david-olivan/habitforge/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/david-olivan/habitforge/branch/main/graph/badge.svg)](https://codecov.io/gh/david-olivan/habitforge)
 [![Android Build Compliance](https://github.com/david-olivan/habitforge/actions/workflows/android-compliance.yml/badge.svg)](https://github.com/david-olivan/habitforge/actions/workflows/android-compliance.yml)
 
 <p align="center">
@@ -106,6 +108,78 @@ buildozer android debug
 # Build and install on connected device
 buildozer android debug deploy run
 ```
+
+## Testing
+
+HabitForge uses a comprehensive test suite to ensure code quality and prevent regressions.
+
+### Running Tests
+
+```bash
+# Run all unit tests with coverage
+pytest tests/unit/ -v
+
+# Run specific test module
+pytest tests/unit/logic/test_date_utils.py -v
+pytest tests/unit/models/test_database.py -v
+
+# Run Android compatibility tests
+pytest tests/test_android_compatibility.py -v
+pytest tests/test_buildozer_spec.py -v
+
+# Generate HTML coverage report
+pytest tests/unit/ --cov-report=html
+# Open htmlcov/index.html in browser
+```
+
+### Test Coverage
+
+The project maintains high test coverage for core business logic:
+
+- **Date utilities** (`logic/date_utils.py`): 43 tests covering period calculations, edge cases
+- **Database operations** (`models/database.py`): 42 tests covering CRUD, constraints, settings
+- **Streak calculator** (`logic/streak_calculator.py`): Comprehensive streak logic tests
+- **Android compliance**: Build configuration and compatibility validation
+
+**Coverage targets:**
+- Core logic (`app/logic/`): 90%+
+- Data layer (`app/models/`): 85%+
+- Overall: 80%+
+
+### Pre-commit Hooks
+
+Install pre-commit hooks to run tests automatically before each commit:
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Install git hooks
+pre-commit install
+
+# Run hooks manually on all files
+pre-commit run --all-files
+```
+
+The hooks will:
+- Run unit tests (fast, ~0.3s)
+- Run Android compatibility checks
+- Validate YAML, JSON syntax
+- Check for large files and merge conflicts
+
+Bypass hooks when needed (use sparingly):
+```bash
+git commit --no-verify
+```
+
+### Continuous Integration
+
+All pull requests automatically run:
+- ✅ Unit tests with coverage reporting
+- ✅ Android build compliance checks
+- ✅ Code quality validation
+
+Coverage reports are uploaded to [Codecov](https://codecov.io/gh/david-olivan/habitforge) with PR comments showing coverage changes.
 
 ## Project Structure
 

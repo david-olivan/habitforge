@@ -1,0 +1,83 @@
+# Pre-commit hooks configuration for HabitForge
+# https://pre-commit.com/
+#
+# Installation:
+#   pip install pre-commit
+#   pre-commit install
+#
+# Run manually:
+#   pre-commit run --all-files
+#
+# Bypass hooks (use sparingly):
+#   git commit --no-verify
+
+repos:
+  # Local hooks that run project tests
+  - repo: local
+    hooks:
+      # Run unit tests before every commit
+      - id: pytest-unit
+        name: Run unit tests
+        entry: python -m pytest tests/unit/ -q --tb=line --maxfail=3 --no-cov
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+        verbose: true
+
+      # Run Android compatibility checks
+      - id: android-compliance
+        name: Android compatibility checks
+        entry: python -m pytest tests/test_android_compatibility.py tests/test_buildozer_spec.py -q --tb=line --no-cov
+        language: system
+        pass_filenames: false
+        stages: [commit]
+        verbose: true
+
+  # Standard pre-commit hooks for code quality
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      # Prevent committing large files
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+
+      # Ensure files end with newline
+      - id: end-of-file-fixer
+        exclude: '\.svg$'
+
+      # Trim trailing whitespace
+      - id: trailing-whitespace
+        exclude: '\.md$'
+
+      # Check YAML syntax
+      - id: check-yaml
+        args: ['--unsafe']  # Allow custom tags in GitHub Actions
+
+      # Check for merge conflict markers
+      - id: check-merge-conflict
+
+      # Check for debugger imports
+      - id: debug-statements
+
+      # Ensure JSON is valid
+      - id: check-json
+
+      # Check for files that would conflict on case-insensitive filesystems
+      - id: check-case-conflict
+
+  # Python code formatting with Black (optional - commented out by default)
+  # Uncomment if you want automatic code formatting
+  # - repo: https://github.com/psf/black
+  #   rev: 24.10.0
+  #   hooks:
+  #     - id: black
+  #       language_version: python3.11
+  #       args: ['--line-length=100']
+
+  # Python import sorting (optional - commented out by default)
+  # - repo: https://github.com/pycqa/isort
+  #   rev: 5.13.2
+  #   hooks:
+  #     - id: isort
+  #       args: ['--profile', 'black', '--line-length', '100']

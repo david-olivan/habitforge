@@ -1,0 +1,50 @@
+# Codecov configuration for HabitForge
+# https://docs.codecov.com/docs/codecov-yaml
+
+# Coverage target and thresholds
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+  status:
+    # Overall project coverage
+    project:
+      default:
+        target: 80%
+        threshold: 2%
+        if_ci_failed: error
+
+    # Coverage on changes in PR
+    patch:
+      default:
+        target: 75%
+        threshold: 5%
+        if_ci_failed: error
+
+# PR comment configuration
+comment:
+  layout: "reach,diff,flags,tree,footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+# Ignore paths (match .coveragerc)
+ignore:
+  - "app/main.py"
+  - "app/views/**"
+  - "app/components/**"
+  - "app/data/**"
+  - "app/utils/**"
+  - "tests/**"
+  - "scripts/**"
+  - "docs/**"
+
+# Flags to track different test types
+flags:
+  unittests:
+    paths:
+      - app/logic/
+      - app/models/
+    carryforward: true
