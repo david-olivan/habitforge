@@ -41,10 +41,10 @@ HABIT_NAME_PADDING_VERTICAL = 4
 HABIT_NAME_RADIUS = 8
 
 # Streak display
-STREAK_CONTAINER_WIDTH = 40
+STREAK_CONTAINER_WIDTH = 52  # Increased from 40 to accommodate double-digit streaks
 STREAK_SPACING = 2
 STREAK_PADDING_LEFT = 4
-STREAK_LABEL_WIDTH = 12
+STREAK_LABEL_WIDTH = 24  # Increased from 12 to prevent vertical stacking of 10+ day streaks
 STREAK_ICON_SIZE = 20
 
 # Completion button

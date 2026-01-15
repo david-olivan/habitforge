@@ -13,6 +13,18 @@ from kivy.properties import ObjectProperty, StringProperty
 from kivy.metrics import dp
 from datetime import date, timedelta
 from config.constants import BRAND_PRIMARY_RGB, hex_to_rgba
+from logic.localization import _
+
+
+# ============================================
+# MONTH TRANSLATION MAPPING
+# ============================================
+
+# Mapping month numbers (1-12) to translation keys
+MONTH_KEYS = [
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december"
+]
 
 
 # ============================================
@@ -88,6 +100,13 @@ class DayButton(MDCard):
         # Bind on_release to trigger callback
         self.bind(on_release=self._on_tap)
 
+    def _get_translated_month_abbr(self, month_num: int) -> str:
+        """Get 3-letter translated month abbreviation."""
+        if 1 <= month_num <= 12:
+            full_month = _(f"analytics.months.{MONTH_KEYS[month_num - 1]}")
+            return full_month[:3]  # First 3 characters
+        return ""
+
     def _build_ui(self):
         """Build button UI with day number and month abbreviation."""
         # Container for labels (vertically stacked)
@@ -125,7 +144,7 @@ class DayButton(MDCard):
         else:
             month_color = COLOR_MONTH_TEXT
         self.month_label = MDLabel(
-            text=self.day_date.strftime("%b"),  # 3-letter month (Dec, Jan, etc.)
+            text=self._get_translated_month_abbr(self.day_date.month),  # Localized 3-letter month
             halign="center",
             valign="top",
             theme_text_color="Custom",
